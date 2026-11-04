@@ -3,9 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="KeyRush: a cyber-brutalist typing test and bug-fixing challenge by TKM FOSS community builders." />
-  <meta name="theme-color" content="#08090a" />
-  <title>KeyRush — Typing Speed Test</title>
+  <meta name="description" content="KeyRush by BrokenKey — a focused typing speed and accuracy practice arena." />
+  <meta name="theme-color" content="#101310" />
+  <title>KeyRush — Typing Practice</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="icon" type="image/png" sizes="64x64" href="assets/keyrush-wasd-favicon.png" />
   <link rel="apple-touch-icon" href="assets/keyrush-wasd-favicon.png" />
   <link rel="stylesheet" href="style.css" />
@@ -14,20 +17,12 @@
   <main class="container">
     <header class="topbar">
       <div class="brand">
-        <div class="wasd-mark" role="group" aria-label="Interactive WASD keys">
-          <button class="wasd-key key-w" type="button" aria-label="W key: move forward" data-tip="W // MOVE FORWARD">W</button>
-          <button class="wasd-key key-a" type="button" aria-label="A key: move left" data-tip="A // STRAFE LEFT">A</button>
-          <button class="wasd-key key-s" type="button" aria-label="S key: move backward" data-tip="S // MOVE BACK">S</button>
-          <button class="wasd-key key-d" type="button" aria-label="D key: move right" data-tip="D // STRAFE RIGHT">D</button>
-          <span id="wasd-tip" class="wasd-tip" aria-live="polite">HOVER / PRESS A KEY</span>
-        </div>
-        <div class="brand-copy"><h1>KeyRush</h1><p class="eyebrow">TKM FOSS // THE TYPING ARENA</p><span class="brand-stamp">INPUT / OUTPUT / CHAOS</span></div>
+        <a class="brand-mark" href="index.html" aria-label="KeyRush home">K</a>
+        <div class="brand-copy"><h1>KeyRush</h1><p class="eyebrow">A TYPING PERFORMANCE ARENA</p><span id="wasd-tip" class="sr-only" aria-live="polite">HOVER / PRESS A KEY</span></div>
       </div>
       <button id="theme-btn" class="icon-btn" type="button" aria-label="Toggle light and dark mode">☼ <span>Light mode</span></button>
     </header>
-    <div class="ticker" aria-hidden="true"><span>● LIVE BUILD</span><span>NO BUILD STEP</span><span>PATCH THE CHAOS</span><span>TKM FOSS / 2026</span><span>● LIVE BUILD</span></div>
-    <p class="subtitle">TYPE FAST. THINK SHARP.<span class="subtitle-tag"> // NEW : GHOST MODE  // TRY BEATING THE OTHER SIDE </span></p>
-    <div class="chaos-strip"><span class="warning-sticker">WARNING: UNSTABLE UI</span><span class="serial">KR-07 / INPUT LAB</span><span class="micro-copy">YOUR KEYBOARD IS THE CONTROLLER.</span></div>
+    <p class="subtitle">Build speed through consistency. Focus on accuracy, one keystroke at a time.</p>
 
     <section class="stats" aria-label="Live typing statistics">
       <div class="stat"><span class="stat-label">Time left</span><span id="time" class="stat-value">30<span class="unit">s</span></span></div>
@@ -38,7 +33,7 @@
     </section>
 
     <section class="test-panel">
-      <div class="panel-heading"><div><span class="live-dot"></span><span id="status-label">READY WHEN YOU ARE</span></div><span class="tiny-label">CHOOSE YOUR ROUND</span><span class="panel-code">SYS.ERR // 000</span></div>
+      <div class="panel-heading"><div><span class="live-dot"></span><span id="status-label">READY WHEN YOU ARE</span></div><span class="tiny-label">YOUR NEXT SESSION</span></div>
       <div class="toolbar">
         <div class="timer-options" aria-label="Test duration">
           <button class="time-btn" data-time="15" type="button">15 sec</button>
@@ -54,7 +49,7 @@
       <div id="passage" class="passage" aria-label="Text to type"></div>
       <label class="sr-only" for="typing-input">Type the passage here</label>
       <textarea id="typing-input" class="typing-input" rows="3" placeholder="Press Start, then type the passage here…" disabled spellcheck="false" autocapitalize="off" autocomplete="off"></textarea>
-      <div class="input-hint"><span>TIP: Accuracy matters as much as speed.</span><span class="input-warning">INPUT BUFFER // VOLATILE</span><span><kbd>Backspace</kbd> to correct</span></div>
+      <div class="input-hint"><span>TIP: Accuracy matters as much as speed.</span><span><kbd>Backspace</kbd> to correct</span></div>
       <div id="result" class="result hidden" role="status"></div>
       <div class="controls">
         <button id="start-btn" class="btn btn-primary" type="button">▶ Start test</button>
@@ -94,7 +89,6 @@
         <div id="keyboard-layout" class="keyboard-layout" aria-label="Visual keyboard error distribution"></div>
       </div>
     </section>
-    <div class="bottom-chaos"><span class="tiny-sticker">DEBUG THE EXPERIENCE</span><span>STATUS: MOSTLY OPERATIONAL*</span><span>* RESULTS MAY BE QUESTIONABLE</span></div>
     <footer><span class="foss-credit"><img src="assets/tkm-foss-logo.png" alt="TKM FOSS logo" /><span>Built for curious minds and bug hunters.<small>TKM FOSS COMMUNITY BUILD</small></span></span><span>VANILLA JS · NO DEPENDENCIES</span></footer>
 
     <!-- Session Replay Theater Modal -->

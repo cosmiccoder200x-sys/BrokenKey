@@ -5,52 +5,39 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ghost Mode — KeyRush</title>
+  <meta name="theme-color" content="#101310" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <main class="container ghost-container">
-    <!-- Spider Web Decorations -->
-<div class="spider-web web-top-left" aria-hidden="true"></div>
-<div class="spider-web web-top-right" aria-hidden="true"></div>
-
-<!-- Hanging Spiders -->
-<div class="hanging-spider spider-left" aria-hidden="true">
-  <span class="spider-thread"></span>
-  <span class="spider-body">●</span>
-  <span class="spider-legs">╱╲╱╲</span>
-</div>
-
-<div class="hanging-spider spider-right" aria-hidden="true">
-  <span class="spider-thread"></span>
-  <span class="spider-body">●</span>
-  <span class="spider-legs">╱╲╱╲</span>
-</div>
-  <header class="topbar">
-  <div class="brand-copy">
-    <h1>Ghost Mode</h1>
-    <p class="eyebrow">THINK YOU CAN WIN?</p>
-  </div>
-
-  <div class="race-timer">
-    <span>TIME LEFT</span>
-    <strong id="race-timer">30</strong>
-    <span>SECONDS</span>
-  </div>
-
-  <button id="theme-btn" class="icon-btn" type="button">
-    ☼ Light mode
-  </button>
-</header>
+    <header class="topbar ghost-topbar">
+      <div class="brand-copy">
+        <p class="eyebrow">KEYRUSH / COMPETITIVE MODE</p>
+        <h1>Ghost Mode</h1>
+        <p class="ghost-intro">Race the simulated opponent. Keep your rhythm.</p>
+      </div>
+      <div class="ghost-header-actions">
+        <div class="race-timer" aria-live="off">
+          <span>TIME LEFT</span>
+          <strong id="race-timer">30</strong>
+          <span>SECONDS</span>
+        </div>
+        <button id="theme-btn" class="icon-btn" type="button" aria-label="Toggle light and dark mode">☼ <span>Light mode</span></button>
+        <a href="index.html" class="btn btn-secondary">← Practice</a>
+      </div>
+    </header>
 
     <section class="test-panel">
-      <button id="rules-btn" type="button" class="rules-btn">
-    📜 Rules
-</button>
-
-      <h2>Select Difficulty</h2>
-
+      <div class="ghost-controls-heading">
+        <div><h2>Race setup</h2><p>Choose the pace you want to challenge.</p></div>
+        <button id="rules-btn" type="button" class="rules-btn">Race rules</button>
+      </div>
       <div class="difficulty-options">
-        <select id="difficulty">
+        <label class="sr-only" for="difficulty">Select race difficulty</label>
+        <select id="difficulty" aria-label="Select race difficulty">
           <option value="beginner">Beginner</option>
           <option value="intermediate">Intermediate</option>
           <option value="advanced">Advanced</option>
@@ -71,15 +58,19 @@
 
           <div id="player-passage" class="passage"></div>
 
+          <label class="sr-only" for="player-input">Type the race passage here</label>
           <textarea
             id="player-input"
             class="typing-input"
+            rows="3"
             placeholder="Start typing here..."
             disabled
             spellcheck="false"
+            autocomplete="off"
+            autocapitalize="off"
           ></textarea>
 
-          <p>Progress: <span id="player-progress">0%</span></p>
+          <p class="progress-label">Your progress <strong id="player-progress">0%</strong></p>
         </div>
 
         <!-- Ghost Panel -->
@@ -93,7 +84,7 @@
 
           <div id="ghost-passage" class="passage"></div>
 
-          <p>Progress: <span id="ghost-progress">0%</span></p>
+          <p class="progress-label">Ghost progress <strong id="ghost-progress">0%</strong></p>
         </div>
 
       </div>
@@ -107,9 +98,7 @@
             Reset
       </button>
 
-        <a href="index.html" class="btn btn-secondary">
-          Back to KeyRush
-        </a>
+        
       </div>
 
       <div id="ghost-message" class="result hidden"></div>
