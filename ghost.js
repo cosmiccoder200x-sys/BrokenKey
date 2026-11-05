@@ -144,6 +144,29 @@ function renderPassage(element, text) {
     }
 }
 
+/*
+ * Prepare the next passage as soon as Ghost Mode opens.
+ * The player can inspect the text before starting the timed race.
+ */
+function preparePassage() {
+    passage = passages[Math.floor(Math.random() * passages.length)];
+    playerInput.maxLength = passage.length;
+
+    renderPassage(playerPassage, passage);
+    renderPassage(ghostPassage, passage);
+
+    const firstPlayerCharacter = playerPassage.querySelector(".char");
+    const firstGhostCharacter = ghostPassage.querySelector(".char");
+
+    if (firstPlayerCharacter) {
+        firstPlayerCharacter.classList.add("current");
+    }
+
+    if (firstGhostCharacter) {
+        firstGhostCharacter.classList.add("current");
+    }
+}
+
 // Calculate WPM
 function calculateWPM(attempts, elapsed) {
     const minutes = elapsed / 60000;
@@ -459,17 +482,14 @@ startBtn.addEventListener("click", () => {
         return;
     }
 
-    resetGame();
+    // Keep the passage that was preloaded when this page opened.
+    resetGame({ preservePassage: true });
 
-    passage = passages[Math.floor(Math.random() * passages.length)];
+    if (!passage) {
+        preparePassage();
+    }
+
     playerInput.maxLength = passage.length;
-
-    renderPassage(playerPassage, passage);
-    renderPassage(ghostPassage, passage);
-
-    playerPassage.querySelector(".char").classList.add("current");
-    ghostPassage.querySelector(".char").classList.add("current");
-
     targetWpm = settings.wpm;
 
     running = true;
@@ -592,7 +612,7 @@ timeDifference.textContent = "";
     raceResults.classList.remove("hidden");
 }
 // Reset game
-function resetGame() {
+function resetGame({ preservePassage = false } = {}) {
     simulationId++;
 
     clearInterval(timerInterval);
@@ -636,8 +656,30 @@ function resetGame() {
     playerProgress.textContent = "0%";
     ghostProgress.textContent = "0%";
 
-    playerPassage.innerHTML = "";
-    ghostPassage.innerHTML = "";
+    if (preservePassage && passage) {
+        playerPassage.querySelectorAll(".char").forEach(character => {
+            character.className = "char";
+        });
+        ghostPassage.querySelectorAll(".char").forEach(character => {
+            character.className = "char";
+        });
+
+        const firstPlayerCharacter = playerPassage.querySelector(".char");
+        const firstGhostCharacter = ghostPassage.querySelector(".char");
+
+        if (firstPlayerCharacter) {
+            firstPlayerCharacter.classList.add("current");
+        }
+
+        if (firstGhostCharacter) {
+            firstGhostCharacter.classList.add("current");
+        }
+    } else {
+        passage = "";
+        playerPassage.innerHTML = "";
+        ghostPassage.innerHTML = "";
+        preparePassage();
+    }
 
     difficulty.disabled = false;
     startBtn.disabled = false;
@@ -663,6 +705,8 @@ themeBtn.addEventListener("click", () => {
             : "☼ Light mode";
 });
 updateDifficultySelection();
+preparePassage();
+
 // ===== RULES POPUP =====
 
 const rulesBtn = document.getElementById("rules-btn");
