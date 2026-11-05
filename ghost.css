@@ -25,6 +25,7 @@ body.ghost-page.light-mode {
   --psg2: #fff;
   --correct: #167b50;
   --wrong: #c62f48;
+  --shadow: 7px 7px 0 var(--accent);
   --grid: rgba(40, 60, 10, 0.06);
   color: var(--text);
   background-color: var(--page);
