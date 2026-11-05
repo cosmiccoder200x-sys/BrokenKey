@@ -163,10 +163,10 @@ function drawGraph() {
   });
   const choice = document.body.classList.contains('light-mode');
   if (choice) {
-    chartCtx.strokeStyle = '#557D1A'; 
+    chartCtx.strokeStyle = '#547600'; 
     
   } else {
-   chartCtx.strokeStyle = '#A3E635';  
+   chartCtx.strokeStyle = '#d6ff35';  
   }
   chartCtx.lineWidth = 2.5;
   chartCtx.stroke();
@@ -178,7 +178,7 @@ function drawGraph() {
     const y = padTop + plotH - (clampedWPM / maxWPM) * plotH;
     chartCtx.beginPath();
     chartCtx.arc(x, y, 3.5, 0, Math.PI * 2);
-    chartCtx.fillStyle = '#A3E635';
+    chartCtx.fillStyle = '#d6ff35';
     chartCtx.fill();
     chartCtx.strokeStyle = '#08090a';
     chartCtx.lineWidth = 1.5;
