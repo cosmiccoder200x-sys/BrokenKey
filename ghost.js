@@ -31,6 +31,7 @@ const resetBtn = document.getElementById("reset-ghost-btn");
 const message = document.getElementById("ghost-message");
 const themeBtn = document.getElementById("theme-btn");
 const raceTimer = document.getElementById("race-timer");
+const raceTimerContainer = document.getElementById("race-timer-container");
 const raceResults = document.getElementById("race-results");
 const winnerHeading = document.getElementById("winner-heading");
 
@@ -488,7 +489,7 @@ startBtn.addEventListener("click", () => {
 });
 
 function startRaceTimer() {
-    raceTimer.hidden = false;
+    raceTimerContainer.hidden = false;
     timeLeft = 30;
     raceTimer.textContent = timeLeft;
 
@@ -608,7 +609,7 @@ function resetGame() {
 
     timeLeft = 30;
     raceTimer.textContent = "30";
-    raceTimer.hidden = true;
+    raceTimerContainer.hidden = true;
 
     playerAttempts = 0;
     playerMistakes = 0;
