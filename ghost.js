@@ -488,6 +488,7 @@ startBtn.addEventListener("click", () => {
 });
 
 function startRaceTimer() {
+    raceTimer.hidden = false;
     timeLeft = 30;
     raceTimer.textContent = timeLeft;
 
@@ -607,6 +608,7 @@ function resetGame() {
 
     timeLeft = 30;
     raceTimer.textContent = "30";
+    raceTimer.hidden = true;
 
     playerAttempts = 0;
     playerMistakes = 0;
