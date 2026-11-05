@@ -1,12 +1,9 @@
 /*
- * Ghost Mode page styling.
- *
- * style.css is loaded first and remains the source of the shared KeyRush
- * design tokens. This file only replaces the legacy Ghost Mode presentation
- * with those tokens; it does not change the Practice page.
+ * Ghost Mode visual layer.
+ * style.css remains the shared source of KeyRush design tokens.
+ * All selectors are scoped to this page so the Practice UI is untouched.
  */
 
-/* Reuse the Practice page's charcoal background, grid and lime accent. */
 body.ghost-page {
   color: var(--text);
   background-color: var(--page);
@@ -18,14 +15,14 @@ body.ghost-page {
 
 body.ghost-page.light-mode {
   --page: #f0f2e9;
-  --panel: #ffffff;
+  --panel: #fff;
   --panel2: #e7eadf;
   --text: #2c352e;
   --muted: #65705e;
   --border: #bfc6b5;
   --accent: #547600;
-  --accent-ink: #ffffff;
-  --psg2: #ffffff;
+  --accent-ink: #fff;
+  --psg2: #fff;
   --correct: #167b50;
   --wrong: #c62f48;
   --grid: rgba(40, 60, 10, 0.06);
@@ -36,22 +33,22 @@ body.ghost-page.light-mode {
     linear-gradient(90deg, var(--grid) 1px, transparent 1px);
 }
 
-/* Keep the same content width and header treatment as the home page. */
-.ghost-page .ghost-container {
+/* Match the home page's 1000px content width and header hierarchy. */
+body.ghost-page .ghost-container {
   width: 100%;
   max-width: 1000px;
   margin: 0 auto;
   padding: 0;
 }
 
-.ghost-page .topbar {
+body.ghost-page .topbar {
   align-items: center;
   gap: 18px;
   border-bottom: 2px solid var(--accent);
   padding: 0 0 18px;
 }
 
-.ghost-page .brand-copy h1 {
+body.ghost-page .brand-copy h1 {
   margin: 0;
   color: var(--text);
   font-size: clamp(2rem, 5vw, 3.5rem);
@@ -61,11 +58,11 @@ body.ghost-page.light-mode {
   text-transform: uppercase;
 }
 
-.ghost-page .eyebrow {
+body.ghost-page .eyebrow {
   color: var(--accent);
 }
 
-.ghost-page .icon-btn {
+body.ghost-page .icon-btn {
   max-width: 118px;
   padding: 12px 14px;
   border: 1px solid var(--text);
@@ -75,8 +72,8 @@ body.ghost-page.light-mode {
   box-shadow: none;
 }
 
-/* The main test surface follows the same sharp-edged panel treatment. */
-.ghost-page .ghost-container > .test-panel {
+/* Main Ghost Mode surface. */
+body.ghost-page .ghost-container > .test-panel {
   position: relative;
   overflow: visible;
   padding: 22px;
@@ -86,11 +83,11 @@ body.ghost-page.light-mode {
   box-shadow: var(--shadow);
 }
 
-.ghost-page .ghost-container > .test-panel::after {
+body.ghost-page .ghost-container > .test-panel::after {
   display: none;
 }
 
-.ghost-page .test-panel > h2 {
+body.ghost-page .test-panel > h2 {
   margin: 0;
   color: var(--muted);
   font: 800 0.67rem/1.4 ui-monospace, SFMono-Regular, Consolas, monospace;
@@ -99,8 +96,8 @@ body.ghost-page.light-mode {
   text-transform: uppercase;
 }
 
-/* Rules and difficulty controls use the same understated button language. */
-.ghost-page .rules-btn {
+/* Compact Rules action and native, non-overlapping difficulty selector. */
+body.ghost-page .rules-btn {
   display: block;
   margin: 0 0 18px auto;
   padding: 10px 12px;
@@ -114,19 +111,20 @@ body.ghost-page.light-mode {
   cursor: pointer;
 }
 
-.ghost-page .rules-btn:hover {
+body.ghost-page .rules-btn:hover {
   border-color: var(--accent);
+  background: var(--panel2);
   color: var(--accent);
 }
 
-.ghost-page .difficulty-options {
+body.ghost-page .difficulty-options {
   display: flex;
   justify-content: center;
   width: 100%;
   margin: 18px auto 24px;
 }
 
-.ghost-page #difficulty {
+body.ghost-page #difficulty {
   display: block;
   width: 280px;
   max-width: 100%;
@@ -145,24 +143,25 @@ body.ghost-page.light-mode {
   cursor: pointer;
 }
 
-.ghost-page #difficulty:hover {
+body.ghost-page #difficulty:hover,
+body.ghost-page #difficulty:focus {
   border-color: var(--accent);
-}
-
-.ghost-page #difficulty:focus-visible {
-  border-color: var(--accent);
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
+  outline: none;
   box-shadow: none;
 }
 
-.ghost-page #difficulty option {
+body.ghost-page #difficulty:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+body.ghost-page #difficulty option {
   background: var(--panel);
   color: var(--text);
 }
 
-/* YOU and GHOST remain distinct race panels, but share one component style. */
-.ghost-page .ghost-panels {
+/* YOU and GHOST share one panel component and the same visual language. */
+body.ghost-page .ghost-panels {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   align-items: stretch;
@@ -170,8 +169,8 @@ body.ghost-page.light-mode {
   margin: 20px 0;
 }
 
-.ghost-page .typing-panel,
-.ghost-page .typing-panel:nth-child(2) {
+body.ghost-page .typing-panel,
+body.ghost-page .typing-panel:nth-child(2) {
   display: flex;
   min-width: 0;
   flex-direction: column;
@@ -183,8 +182,8 @@ body.ghost-page.light-mode {
   box-shadow: none;
 }
 
-.ghost-page .typing-panel h2,
-.ghost-page .typing-panel:nth-child(2) h2 {
+body.ghost-page .typing-panel h2,
+body.ghost-page .typing-panel:nth-child(2) h2 {
   margin: 0;
   padding-bottom: 10px;
   border-bottom: 1px solid var(--border);
@@ -194,7 +193,7 @@ body.ghost-page.light-mode {
   text-transform: uppercase;
 }
 
-.ghost-page .typing-stats {
+body.ghost-page .typing-stats {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
@@ -205,19 +204,19 @@ body.ghost-page.light-mode {
   text-transform: uppercase;
 }
 
-.ghost-page .typing-stats span {
+body.ghost-page .typing-stats span {
   flex: 1 1 110px;
   padding: 8px 9px;
   border: 1px solid var(--border);
   background: var(--panel);
 }
 
-.ghost-page .typing-stats strong {
+body.ghost-page .typing-stats strong {
   color: var(--text);
   font-variant-numeric: tabular-nums;
 }
 
-.ghost-page .typing-panel .passage {
+body.ghost-page .typing-panel .passage {
   width: 100%;
   min-height: 155px;
   padding: 18px;
@@ -231,7 +230,7 @@ body.ghost-page.light-mode {
   font: 1rem/1.85 ui-monospace, SFMono-Regular, Consolas, monospace;
 }
 
-.ghost-page .typing-panel .typing-input {
+body.ghost-page .typing-panel .typing-input {
   display: block;
   width: 100%;
   min-width: 0;
@@ -248,47 +247,47 @@ body.ghost-page.light-mode {
   font: 1rem/1.65 ui-monospace, SFMono-Regular, Consolas, monospace;
 }
 
-.ghost-page .typing-panel .typing-input:focus,
-.ghost-page .typing-panel .typing-input:focus-visible {
+body.ghost-page .typing-panel .typing-input:focus,
+body.ghost-page .typing-panel .typing-input:focus-visible {
   border-color: var(--accent);
   outline: 2px solid var(--accent);
   outline-offset: 2px;
   box-shadow: inset 4px 0 0 var(--accent);
 }
 
-.ghost-page .char.correct {
+body.ghost-page .char.correct {
   color: var(--correct);
 }
 
-.ghost-page .char.wrong {
+body.ghost-page .char.wrong {
   color: var(--wrong);
   background: rgba(255, 90, 114, 0.12);
 }
 
-.ghost-page .char.current,
-.ghost-page .typing-panel:nth-child(2) .char.current {
+body.ghost-page .char.current,
+body.ghost-page .typing-panel:nth-child(2) .char.current {
   border-left-color: var(--accent);
 }
 
-.ghost-page .typing-panel > p {
+body.ghost-page .typing-panel > p {
   margin: 14px 0 0;
   color: var(--muted);
   font: 700 0.68rem/1.5 ui-monospace, SFMono-Regular, Consolas, monospace;
   text-transform: uppercase;
 }
 
-.ghost-page .typing-panel > p span {
+body.ghost-page .typing-panel > p span {
   color: var(--accent);
   font-variant-numeric: tabular-nums;
 }
 
-/* Main page button styles are reused instead of the old orange/purple variants. */
-.ghost-page .controls {
+/* Reuse the home page's square primary/secondary button treatment. */
+body.ghost-page .controls {
   align-items: center;
   gap: 10px;
 }
 
-.ghost-page .controls .btn {
+body.ghost-page .controls .btn {
   flex: 1 1 170px;
   min-width: 0;
   border-radius: 0;
@@ -296,38 +295,39 @@ body.ghost-page.light-mode {
   text-decoration: none;
 }
 
-.ghost-page .controls .btn-primary,
-.ghost-page .controls .btn-primary:hover {
+body.ghost-page .controls .btn-primary,
+body.ghost-page .controls .btn-primary:hover {
   border: 1px solid var(--accent);
   background: var(--accent);
   color: var(--accent-ink);
   box-shadow: none;
 }
 
-.ghost-page .controls .btn-secondary {
+body.ghost-page .controls .btn-secondary {
   border: 1px solid var(--border);
   background: transparent;
   color: var(--text);
 }
 
-.ghost-page .controls .btn-secondary:hover {
+body.ghost-page .controls .btn-secondary:hover {
   border-color: var(--accent);
   color: var(--accent);
   box-shadow: 3px 3px 0 var(--accent);
 }
 
-.ghost-page .controls .btn:disabled {
+body.ghost-page .controls .btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
 }
 
-.ghost-page .race-timer[hidden] {
+/* Race timer and results. */
+body.ghost-page .race-timer[hidden] {
   display: none !important;
 }
 
-.ghost-page .race-timer {
+body.ghost-page .race-timer {
   display: flex;
   flex-shrink: 0;
   align-items: center;
@@ -342,25 +342,24 @@ body.ghost-page.light-mode {
   box-shadow: none;
 }
 
-.ghost-page .race-timer::before {
+body.ghost-page .race-timer::before {
   content: none;
 }
 
-.ghost-page .race-timer strong {
+body.ghost-page .race-timer strong {
   color: var(--accent);
   font-size: 1.5rem;
   font-variant-numeric: tabular-nums;
   text-shadow: none;
 }
 
-.ghost-page .race-timer span {
+body.ghost-page .race-timer span {
   color: var(--muted);
   font: 700 0.62rem/1.3 ui-monospace, SFMono-Regular, Consolas, monospace;
   letter-spacing: 0.08em;
 }
 
-/* Results, paste feedback and Rules dialog use the same surfaces and tokens. */
-.ghost-page #ghost-message {
+body.ghost-page #ghost-message {
   margin: 16px 0 0;
   padding: 12px;
   border: 1px solid var(--accent);
@@ -370,13 +369,13 @@ body.ghost-page.light-mode {
   font: 700 0.72rem/1.5 ui-monospace, SFMono-Regular, Consolas, monospace;
 }
 
-.ghost-page .paste-warning {
+body.ghost-page .paste-warning {
   color: var(--wrong);
   font: 700 0.68rem/1.5 ui-monospace, SFMono-Regular, Consolas, monospace;
   text-align: left;
 }
 
-.ghost-page .race-results {
+body.ghost-page .race-results {
   margin-top: 18px;
   padding: 18px;
   border: 1px solid var(--border);
@@ -386,40 +385,41 @@ body.ghost-page.light-mode {
   color: var(--text);
 }
 
-.ghost-page .race-results h2,
-.ghost-page .race-results h3 {
+body.ghost-page .race-results h2,
+body.ghost-page .race-results h3 {
   color: var(--accent);
   font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
   text-transform: uppercase;
 }
 
-.ghost-page .race-results p {
+body.ghost-page .race-results p {
   color: var(--text);
 }
 
-.ghost-page .result-comparison {
+body.ghost-page .result-comparison {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
 }
 
-.ghost-page .result-comparison > div {
+body.ghost-page .result-comparison > div {
   min-width: 0;
   padding: 14px;
   border: 1px solid var(--border);
   background: var(--panel);
 }
 
-.ghost-page .rules-modal[hidden] {
+/* Rules dialog. */
+body.ghost-page .rules-modal[hidden] {
   display: none !important;
 }
 
-.ghost-page .rules-modal {
+body.ghost-page .rules-modal {
   padding: 18px;
   background: rgba(8, 9, 10, 0.82);
 }
 
-.ghost-page .rules-modal-content {
+body.ghost-page .rules-modal-content {
   width: 100%;
   max-width: 550px;
   max-height: 85vh;
@@ -432,7 +432,7 @@ body.ghost-page.light-mode {
   box-shadow: var(--shadow);
 }
 
-.ghost-page .rules-modal-content h2 {
+body.ghost-page .rules-modal-content h2 {
   margin-top: 0;
   color: var(--accent);
   font: 900 0.9rem/1.4 ui-monospace, SFMono-Regular, Consolas, monospace;
@@ -440,13 +440,13 @@ body.ghost-page.light-mode {
   text-transform: uppercase;
 }
 
-.ghost-page .rules-content {
+body.ghost-page .rules-content {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
 }
 
-.ghost-page .rule-group {
+body.ghost-page .rule-group {
   min-width: 0;
   padding: 14px;
   border: 1px solid var(--border);
@@ -454,20 +454,20 @@ body.ghost-page.light-mode {
   background: var(--panel2);
 }
 
-.ghost-page .rule-group h3 {
+body.ghost-page .rule-group h3 {
   margin-top: 0;
   color: var(--accent);
   font: 800 0.72rem/1.4 ui-monospace, SFMono-Regular, Consolas, monospace;
   text-transform: uppercase;
 }
 
-.ghost-page .rule-group li {
+body.ghost-page .rule-group li {
   margin-bottom: 9px;
   color: var(--text);
   line-height: 1.55;
 }
 
-.ghost-page #close-rules-btn {
+body.ghost-page #close-rules-btn {
   display: block;
   margin: 18px 0 0 auto;
   padding: 11px 16px;
@@ -480,181 +480,83 @@ body.ghost-page.light-mode {
   cursor: pointer;
 }
 
-/* Decorative spider elements belong to the old Ghost theme, not the home UI. */
-.ghost-page .spider-web,
-.ghost-page .hanging-spider {
+/* Remove old spider decorations that have no equivalent on the home page. */
+body.ghost-page .spider-web,
+body.ghost-page .hanging-spider {
   display: none;
-}
-
-/* Explicit light-theme overrides beat legacy body.light-mode Ghost selectors. */
-body.ghost-page.light-mode .ghost-container > .test-panel {
-  border-color: var(--text);
-  background: var(--panel);
-  box-shadow: 4px 4px 0 var(--accent);
-}
-
-body.ghost-page.light-mode .typing-panel,
-body.ghost-page.light-mode .typing-panel:nth-child(2) {
-  border-color: var(--border);
-  border-top-color: var(--accent);
-  background: var(--panel2);
-  box-shadow: none;
-}
-
-body.ghost-page.light-mode .typing-panel h2,
-body.ghost-page.light-mode .typing-panel:nth-child(2) h2 {
-  color: var(--accent);
-}
-
-body.ghost-page.light-mode .typing-stats,
-body.ghost-page.light-mode .typing-panel > p {
-  color: var(--muted);
-}
-
-body.ghost-page.light-mode .typing-stats span,
-body.ghost-page.light-mode .typing-panel .passage,
-body.ghost-page.light-mode .typing-panel .typing-input,
-body.ghost-page.light-mode .result-comparison > div,
-body.ghost-page.light-mode .rule-group {
-  border-color: var(--border);
-  background: var(--panel);
-  color: var(--text);
-}
-
-body.ghost-page.light-mode .typing-stats strong,
-body.ghost-page.light-mode .race-results p,
-body.ghost-page.light-mode .rule-group li {
-  color: var(--text);
-}
-
-body.ghost-page.light-mode .race-timer {
-  border-color: var(--border);
-  border-left-color: var(--accent);
-  background: var(--panel);
-  color: var(--text);
-}
-
-body.ghost-page.light-mode .race-timer strong,
-body.ghost-page.light-mode .race-timer span {
-  color: var(--accent);
-}
-
-body.ghost-page.light-mode .rules-modal-content,
-body.ghost-page.light-mode .race-results {
-  border-color: var(--border);
-  background: var(--panel);
-  color: var(--text);
-  box-shadow: 4px 4px 0 var(--accent);
-}
-
-body.ghost-page.light-mode .rules-modal {
-  background: rgba(20, 24, 16, 0.32);
-}
-
-body.ghost-page.light-mode .rules-modal-content h2,
-body.ghost-page.light-mode .rule-group h3,
-body.ghost-page.light-mode .race-results h2,
-body.ghost-page.light-mode .race-results h3 {
-  color: var(--accent);
-}
-
-body.ghost-page.light-mode .rules-btn {
-  border-color: var(--border);
-  background: var(--panel2);
-  color: var(--muted);
-}
-
-body.ghost-page.light-mode #difficulty,
-body.ghost-page.light-mode #difficulty option {
-  border-color: var(--border);
-  background: var(--panel2);
-  color: var(--text);
-}
-
-body.ghost-page.light-mode .controls .btn-primary,
-body.ghost-page.light-mode #close-rules-btn {
-  border-color: var(--accent);
-  background: var(--accent);
-  color: var(--accent-ink);
-}
-
-body.ghost-page.light-mode .controls .btn-secondary {
-  border-color: var(--border);
-  background: transparent;
-  color: var(--text);
 }
 
 /* Tablet and phone layouts. */
 @media (max-width: 760px) {
-  .ghost-page .ghost-panels {
+  body.ghost-page .ghost-panels {
     grid-template-columns: 1fr;
     gap: 14px;
   }
 
-  .ghost-page .typing-panel {
+  body.ghost-page .typing-panel {
     padding: 16px;
   }
 
-  .ghost-page .race-timer {
+  body.ghost-page .race-timer {
     gap: 8px;
   }
 }
 
 @media (max-width: 560px) {
-  .ghost-page .topbar {
+  body.ghost-page .topbar {
     align-items: flex-start;
     flex-wrap: wrap;
   }
 
-  .ghost-page .brand-copy h1 {
+  body.ghost-page .brand-copy h1 {
     font-size: 2.25rem;
   }
 
-  .ghost-page .icon-btn {
+  body.ghost-page .icon-btn {
     max-width: 118px;
     padding: 10px 8px;
     font-size: 0.65rem;
   }
 
-  .ghost-page .ghost-container > .test-panel {
+  body.ghost-page .ghost-container > .test-panel {
     padding: 14px;
     box-shadow: 4px 4px 0 var(--accent);
   }
 
-  .ghost-page .typing-panel .passage {
+  body.ghost-page .typing-panel .passage {
     min-height: 132px;
     padding: 14px;
     font-size: 0.92rem;
   }
 
-  .ghost-page .typing-panel .typing-input {
+  body.ghost-page .typing-panel .typing-input {
     min-height: 128px;
     height: 128px;
     padding: 13px;
   }
 
-  .ghost-page .typing-stats span {
+  body.ghost-page .typing-stats span {
     flex-basis: 100%;
   }
 
-  .ghost-page .result-comparison,
-  .ghost-page .rules-content {
+  body.ghost-page .result-comparison,
+  body.ghost-page .rules-content {
     grid-template-columns: 1fr;
   }
 
-  .ghost-page .controls .btn {
+  body.ghost-page .controls .btn {
     flex: 1 1 135px;
   }
 
-  .ghost-page .race-timer {
+  body.ghost-page .race-timer {
     width: 100%;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ghost-page *,
-  .ghost-page *::before,
-  .ghost-page *::after {
+  body.ghost-page *,
+  body.ghost-page *::before,
+  body.ghost-page *::after {
     scroll-behavior: auto !important;
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
