@@ -588,16 +588,16 @@ function endRace() {
     ghostFinalScore.textContent = ghostResult.score.toFixed(2);
 
     if (playerFinished && !ghostFinished) {
-    winnerHeading.textContent = "YOU WIN!";
-} else if (ghostFinished && !playerFinished) {
-    winnerHeading.textContent = "GHOST WINS!";
-} else if (playerResult.score > ghostResult.score) {
-    winnerHeading.textContent = "YOU WIN!";
-} else if (ghostResult.score > playerResult.score) {
-    winnerHeading.textContent = "GHOST WINS!";
-} else {
-    winnerHeading.textContent = "IT'S A DRAW!";
-}
+        winnerHeading.textContent = "YOU WIN!";
+    } else if (ghostFinished && !playerFinished) {
+        winnerHeading.textContent = "GHOST WINS!";
+    } else if (playerResult.score > ghostResult.score) {
+        winnerHeading.textContent = "YOU WIN!";
+    } else if (ghostResult.score > playerResult.score) {
+        winnerHeading.textContent = "GHOST WINS!";
+    } else {
+        winnerHeading.textContent = "IT'S A DRAW!";
+    }
 
     if (playerFinished && ghostFinished) {
     completionStatus.textContent =
@@ -610,6 +610,17 @@ function endRace() {
 
 timeDifference.textContent = "";
     raceResults.classList.remove("hidden");
+
+    message.textContent = `RACE COMPLETE — ${winnerHeading.textContent} See the final scores below.`;
+    message.classList.remove("hidden");
+
+    requestAnimationFrame(() => {
+        const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        raceResults.scrollIntoView({
+            behavior: reducedMotion ? "auto" : "smooth",
+            block: "nearest"
+        });
+    });
 }
 // Reset game
 function resetGame({ preservePassage = false } = {}) {
