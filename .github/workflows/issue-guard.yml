@@ -80,14 +80,7 @@ jobs:
                 }
               }
 
-              // 3. Clear any lingering assignees on legitimate close to release claim
-              if (issue.assignees && issue.assignees.length > 0) {
-                await github.rest.issues.removeAssignees({
-                  ...context.repo,
-                  issue_number: issueNumber,
-                  assignees: issue.assignees.map(a => a.login)
-                });
-              }
+
             }
 
             if (action === 'reopened') {
