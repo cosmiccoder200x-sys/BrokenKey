@@ -490,11 +490,11 @@ body.ghost-page .ghost-container {
 body.ghost-page .spider-web {
   position: absolute;
   top: 0;
-  z-index: 0;
+  z-index: 6;
   width: clamp(76px, 10vw, 132px);
   aspect-ratio: 1;
   color: var(--accent);
-  opacity: 0.48;
+  opacity: 0.82;
   pointer-events: none;
   background-image:
     repeating-radial-gradient(circle at 0 0,
@@ -526,9 +526,9 @@ body.ghost-page .hanging-spider {
   align-items: center;
   width: 30px;
   color: var(--accent);
-  opacity: 0.72;
+  opacity: 0.92;
   pointer-events: none;
-  filter: drop-shadow(0 0 5px color-mix(in srgb, var(--accent) 28%, transparent));
+  filter: drop-shadow(0 0 7px color-mix(in srgb, var(--accent) 42%, transparent));
 }
 
 body.ghost-page .spider-left {
@@ -549,8 +549,8 @@ body.ghost-page .spider-thread {
 
 body.ghost-page .spider-body {
   display: block;
-  font-size: 19px;
-  line-height: 0.8;
+  font-size: 22px;
+  line-height: 0.9;
   text-shadow: 0 0 8px currentColor;
 }
 
@@ -566,7 +566,7 @@ body.ghost-page .spider-legs {
 @media (max-width: 760px) {
   body.ghost-page .spider-web {
     width: 66px;
-    opacity: 0.38;
+    opacity: 0.62;
   }
 
   body.ghost-page .hanging-spider {
@@ -586,7 +586,7 @@ body.ghost-page .spider-legs {
 @media (max-width: 420px) {
   body.ghost-page .spider-web {
     width: 48px;
-    opacity: 0.3;
+    opacity: 0.52;
   }
 
   body.ghost-page .hanging-spider {
