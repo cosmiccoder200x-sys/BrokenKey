@@ -481,10 +481,118 @@ body.ghost-page #close-rules-btn {
   cursor: pointer;
 }
 
-/* Remove old spider decorations that have no equivalent on the home page. */
-body.ghost-page .spider-web,
+/* Keep the Ghost Mode atmosphere without affecting the Practice page. */
+body.ghost-page .ghost-container {
+  position: relative;
+  isolation: isolate;
+}
+
+body.ghost-page .spider-web {
+  position: absolute;
+  top: 0;
+  z-index: 0;
+  width: clamp(76px, 10vw, 132px);
+  aspect-ratio: 1;
+  color: var(--accent);
+  opacity: 0.48;
+  pointer-events: none;
+  background-image:
+    repeating-radial-gradient(circle at 0 0,
+      transparent 0 13px,
+      currentColor 13.5px 14.5px,
+      transparent 15px 23px),
+    repeating-conic-gradient(from 0deg at 0 0,
+      transparent 0deg 14deg,
+      currentColor 14.5deg 15.5deg,
+      transparent 16deg 45deg);
+  clip-path: polygon(0 0, 100% 0, 0 100%);
+}
+
+body.ghost-page .web-top-left {
+  left: 0;
+}
+
+body.ghost-page .web-top-right {
+  right: 0;
+  transform: scaleX(-1);
+}
+
 body.ghost-page .hanging-spider {
-  display: none;
+  position: absolute;
+  top: clamp(132px, 15vw, 188px);
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 30px;
+  color: var(--accent);
+  opacity: 0.72;
+  pointer-events: none;
+  filter: drop-shadow(0 0 5px color-mix(in srgb, var(--accent) 28%, transparent));
+}
+
+body.ghost-page .spider-left {
+  left: -18px;
+}
+
+body.ghost-page .spider-right {
+  right: -18px;
+}
+
+body.ghost-page .spider-thread {
+  display: block;
+  width: 1px;
+  height: 34px;
+  background: currentColor;
+  opacity: 0.8;
+}
+
+body.ghost-page .spider-body {
+  display: block;
+  font-size: 19px;
+  line-height: 0.8;
+  text-shadow: 0 0 8px currentColor;
+}
+
+body.ghost-page .spider-legs {
+  display: block;
+  margin-top: -1px;
+  font: 700 9px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+  letter-spacing: -3px;
+  white-space: nowrap;
+  transform: scaleX(1.35);
+}
+
+@media (max-width: 760px) {
+  body.ghost-page .spider-web {
+    width: 66px;
+    opacity: 0.38;
+  }
+
+  body.ghost-page .hanging-spider {
+    top: 142px;
+    transform: scale(0.82);
+  }
+
+  body.ghost-page .spider-left {
+    left: -12px;
+  }
+
+  body.ghost-page .spider-right {
+    right: -12px;
+  }
+}
+
+@media (max-width: 420px) {
+  body.ghost-page .spider-web {
+    width: 48px;
+    opacity: 0.3;
+  }
+
+  body.ghost-page .hanging-spider {
+    top: 125px;
+    opacity: 0.5;
+  }
 }
 
 /* Tablet and phone layouts. */
