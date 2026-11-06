@@ -31,6 +31,7 @@ const resetBtn = document.getElementById("reset-ghost-btn");
 const message = document.getElementById("ghost-message");
 const themeBtn = document.getElementById("theme-btn");
 const raceTimer = document.getElementById("race-timer");
+const raceTimerContainer = document.getElementById("race-timer-container");
 const raceResults = document.getElementById("race-results");
 const winnerHeading = document.getElementById("winner-heading");
 
@@ -140,6 +141,29 @@ function renderPassage(element, text) {
         span.className = "char";
         span.textContent = character;
         element.appendChild(span);
+    }
+}
+
+/*
+ * Prepare the next passage as soon as Ghost Mode opens.
+ * The player can inspect the text before starting the timed race.
+ */
+function preparePassage() {
+    passage = passages[Math.floor(Math.random() * passages.length)];
+    playerInput.maxLength = passage.length;
+
+    renderPassage(playerPassage, passage);
+    renderPassage(ghostPassage, passage);
+
+    const firstPlayerCharacter = playerPassage.querySelector(".char");
+    const firstGhostCharacter = ghostPassage.querySelector(".char");
+
+    if (firstPlayerCharacter) {
+        firstPlayerCharacter.classList.add("current");
+    }
+
+    if (firstGhostCharacter) {
+        firstGhostCharacter.classList.add("current");
     }
 }
 
@@ -458,17 +482,14 @@ startBtn.addEventListener("click", () => {
         return;
     }
 
-    resetGame();
+    // Keep the passage that was preloaded when this page opened.
+    resetGame({ preservePassage: true });
 
-    passage = passages[Math.floor(Math.random() * passages.length)];
+    if (!passage) {
+        preparePassage();
+    }
+
     playerInput.maxLength = passage.length;
-
-    renderPassage(playerPassage, passage);
-    renderPassage(ghostPassage, passage);
-
-    playerPassage.querySelector(".char").classList.add("current");
-    ghostPassage.querySelector(".char").classList.add("current");
-
     targetWpm = settings.wpm;
 
     running = true;
@@ -488,6 +509,7 @@ startBtn.addEventListener("click", () => {
 });
 
 function startRaceTimer() {
+    raceTimerContainer.hidden = false;
     timeLeft = 30;
     raceTimer.textContent = timeLeft;
 
@@ -566,16 +588,16 @@ function endRace() {
     ghostFinalScore.textContent = ghostResult.score.toFixed(2);
 
     if (playerFinished && !ghostFinished) {
-    winnerHeading.textContent = "YOU WIN!";
-} else if (ghostFinished && !playerFinished) {
-    winnerHeading.textContent = "GHOST WINS!";
-} else if (playerResult.score > ghostResult.score) {
-    winnerHeading.textContent = "YOU WIN!";
-} else if (ghostResult.score > playerResult.score) {
-    winnerHeading.textContent = "GHOST WINS!";
-} else {
-    winnerHeading.textContent = "IT'S A DRAW!";
-}
+        winnerHeading.textContent = "YOU WIN!";
+    } else if (ghostFinished && !playerFinished) {
+        winnerHeading.textContent = "GHOST WINS!";
+    } else if (playerResult.score > ghostResult.score) {
+        winnerHeading.textContent = "YOU WIN!";
+    } else if (ghostResult.score > playerResult.score) {
+        winnerHeading.textContent = "GHOST WINS!";
+    } else {
+        winnerHeading.textContent = "IT'S A DRAW!";
+    }
 
     if (playerFinished && ghostFinished) {
     completionStatus.textContent =
@@ -588,9 +610,20 @@ function endRace() {
 
 timeDifference.textContent = "";
     raceResults.classList.remove("hidden");
+
+    message.textContent = `RACE COMPLETE — ${winnerHeading.textContent} See the final scores below.`;
+    message.classList.remove("hidden");
+
+    requestAnimationFrame(() => {
+        const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        raceResults.scrollIntoView({
+            behavior: reducedMotion ? "auto" : "smooth",
+            block: "nearest"
+        });
+    });
 }
 // Reset game
-function resetGame() {
+function resetGame({ preservePassage = false } = {}) {
     simulationId++;
 
     clearInterval(timerInterval);
@@ -607,6 +640,7 @@ function resetGame() {
 
     timeLeft = 30;
     raceTimer.textContent = "30";
+    raceTimerContainer.hidden = true;
 
     playerAttempts = 0;
     playerMistakes = 0;
@@ -633,8 +667,30 @@ function resetGame() {
     playerProgress.textContent = "0%";
     ghostProgress.textContent = "0%";
 
-    playerPassage.innerHTML = "";
-    ghostPassage.innerHTML = "";
+    if (preservePassage && passage) {
+        playerPassage.querySelectorAll(".char").forEach(character => {
+            character.className = "char";
+        });
+        ghostPassage.querySelectorAll(".char").forEach(character => {
+            character.className = "char";
+        });
+
+        const firstPlayerCharacter = playerPassage.querySelector(".char");
+        const firstGhostCharacter = ghostPassage.querySelector(".char");
+
+        if (firstPlayerCharacter) {
+            firstPlayerCharacter.classList.add("current");
+        }
+
+        if (firstGhostCharacter) {
+            firstGhostCharacter.classList.add("current");
+        }
+    } else {
+        passage = "";
+        playerPassage.innerHTML = "";
+        ghostPassage.innerHTML = "";
+        preparePassage();
+    }
 
     difficulty.disabled = false;
     startBtn.disabled = false;
@@ -660,6 +716,8 @@ themeBtn.addEventListener("click", () => {
             : "☼ Light mode";
 });
 updateDifficultySelection();
+preparePassage();
+
 // ===== RULES POPUP =====
 
 const rulesBtn = document.getElementById("rules-btn");

@@ -1,56 +1,55 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#08090a">
   <title>Ghost Mode — KeyRush</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="ghost.css">
 </head>
-<body>
+<body class="ghost-page">
   <main class="container ghost-container">
-    <!-- Spider Web Decorations -->
-<div class="spider-web web-top-left" aria-hidden="true"></div>
-<div class="spider-web web-top-right" aria-hidden="true"></div>
+    <!-- Decorative elements retained from the original Ghost Mode interface. -->
+    <div class="spider-web web-top-left" aria-hidden="true"></div>
+    <div class="spider-web web-top-right" aria-hidden="true"></div>
 
-<!-- Hanging Spiders -->
-<div class="hanging-spider spider-left" aria-hidden="true">
-  <span class="spider-thread"></span>
-  <span class="spider-body">●</span>
-  <span class="spider-legs">╱╲╱╲</span>
-</div>
+    <div class="hanging-spider spider-left" aria-hidden="true">
+      <span class="spider-thread"></span>
+      <span class="spider-body">🕷</span>
+      <span class="spider-legs">╱╲╱╲</span>
+    </div>
 
-<div class="hanging-spider spider-right" aria-hidden="true">
-  <span class="spider-thread"></span>
-  <span class="spider-body">●</span>
-  <span class="spider-legs">╱╲╱╲</span>
-</div>
-  <header class="topbar">
-  <div class="brand-copy">
-    <h1>Ghost Mode</h1>
-    <p class="eyebrow">THINK YOU CAN WIN?</p>
-  </div>
+    <div class="hanging-spider spider-right" aria-hidden="true">
+      <span class="spider-thread"></span>
+      <span class="spider-body">●</span>
+      <span class="spider-legs">╱╲╱╲</span>
+    </div>
 
-  <div class="race-timer">
-    <span>TIME LEFT</span>
-    <strong id="race-timer">30</strong>
-    <span>SECONDS</span>
-  </div>
+    <header class="topbar">
+      <div class="brand-copy">
+        <h1>Ghost Mode</h1>
+        <p class="eyebrow">THINK YOU CAN WIN?</p>
+      </div>
 
-  <button id="theme-btn" class="icon-btn" type="button">
-    ☼ Light mode
-  </button>
-</header>
+      <div class="race-timer" id="race-timer-container" hidden aria-label="Race time remaining">
+        <span>TIME LEFT</span>
+        <strong id="race-timer">30</strong>
+        <span>SECONDS</span>
+      </div>
+
+      <button id="theme-btn" class="icon-btn" type="button" aria-label="Toggle light and dark mode">
+        ☼ Light mode
+      </button>
+    </header>
 
     <section class="test-panel">
-      <button id="rules-btn" type="button" class="rules-btn">
-    📜 Rules
-</button>
+      <button id="rules-btn" type="button" class="rules-btn">📜 Rules</button>
 
       <h2>Select Difficulty</h2>
-
       <div class="difficulty-options">
-        <select id="difficulty">
+        <label class="sr-only" for="difficulty">Select race difficulty</label>
+        <select id="difficulty" aria-label="Select race difficulty">
           <option value="beginner">Beginner</option>
           <option value="intermediate">Intermediate</option>
           <option value="advanced">Advanced</option>
@@ -59,11 +58,8 @@
       </div>
 
       <div class="ghost-panels">
-
-        <!-- Player Panel -->
         <div class="typing-panel">
           <h2>YOU</h2>
-
           <div class="typing-stats">
             <span>WPM: <strong id="player-wpm">0</strong></span>
             <span>Accuracy: <strong id="player-accuracy">100%</strong></span>
@@ -71,109 +67,87 @@
 
           <div id="player-passage" class="passage"></div>
 
+          <label class="sr-only" for="player-input">Type the race passage here</label>
           <textarea
             id="player-input"
             class="typing-input"
+            rows="4"
             placeholder="Start typing here..."
             disabled
             spellcheck="false"
+            autocomplete="off"
+            autocapitalize="off"
           ></textarea>
 
           <p>Progress: <span id="player-progress">0%</span></p>
         </div>
 
-        <!-- Ghost Panel -->
         <div class="typing-panel">
           <h2>GHOST</h2>
-
           <div class="typing-stats">
             <span>WPM: <strong id="ghost-wpm">0</strong></span>
             <span>Accuracy: <strong id="ghost-accuracy">100%</strong></span>
           </div>
 
           <div id="ghost-passage" class="passage"></div>
-
           <p>Progress: <span id="ghost-progress">0%</span></p>
         </div>
-
       </div>
 
       <div class="controls">
-        <button id="start-ghost-btn" class="btn btn-primary" type="button">
-            TRY ME
-        </button>
-
-      <button id="reset-ghost-btn" class="btn btn-secondary" type="button">
-            Reset
-      </button>
-
-        <a href="index.html" class="btn btn-secondary">
-          Back to KeyRush
-        </a>
+        <button id="start-ghost-btn" class="btn btn-primary" type="button">TRY ME</button>
+        <button id="reset-ghost-btn" class="btn btn-secondary" type="button">Reset</button>
+        <a href="index.html" class="btn btn-secondary">← Back to KeyRush</a>
       </div>
 
-      <div id="ghost-message" class="result hidden"></div>
-     
-      <!-- Race Results -->
-<div id="race-results" class="race-results hidden">
-  <h2 id="winner-heading">Race Results</h2>
+      <div id="ghost-message" class="result hidden" role="status" aria-live="polite"></div>
 
-  <div class="result-comparison">
-    <div>
-      <h3>YOU</h3>
-      <p>WPM: <strong id="player-final-wpm">0</strong></p>
-      <p>Accuracy: <strong id="player-final-accuracy">0%</strong></p>
-      <p>Score: <strong id="player-final-score">0</strong></p>
-    </div>
-
-    <div>
-      <h3>GHOST</h3>
-      <p>WPM: <strong id="ghost-final-wpm">0</strong></p>
-      <p>Accuracy: <strong id="ghost-final-accuracy">0%</strong></p>
-      <p>Score: <strong id="ghost-final-score">0</strong></p>
-    </div>
-  </div>
-
-  <p id="completion-status"></p>
-  <p id="time-difference"></p>
-</div>
- <!-- Rules Popup -->
-<div id="rules-modal" class="rules-modal" hidden>
-    <div class="rules-modal-content"
-         role="dialog"
-         aria-modal="true"
-         aria-labelledby="rules-title">
-
-        <h2 id="rules-title">👻 Ghost Mode Rules</h2>
-
-        <div class="rules-content">
-            <div class="rule-group">
-                <h3>🏆 How to Win</h3>
-                <ul>
-                    <li>If only one participant finishes, they win.</li>
-                    <li>If both finish, the higher score wins.</li>
-                    <li>If neither finishes, the higher score wins.</li>
-                    <li>Equal scores result in a draw.</li>
-                </ul>
-            </div>
-
-            <div class="rule-group">
-                <h3>⏱️ Race Rules</h3>
-                <ul>
-                    <li>Each race lasts 30 seconds.</li>
-                    <li>Both participants receive the same passage.</li>
-                    <li>If one finishes early, the other can continue typing.</li>
-                    <li>The race ends when both finish or time runs out.</li>
-                </ul>
-            </div>
+      <div id="race-results" class="race-results hidden" aria-live="polite">
+        <h2 id="winner-heading">Race Results</h2>
+        <div class="result-comparison">
+          <div>
+            <h3>YOU</h3>
+            <p>WPM: <strong id="player-final-wpm">0</strong></p>
+            <p>Accuracy: <strong id="player-final-accuracy">0%</strong></p>
+            <p>Score: <strong id="player-final-score">0</strong></p>
+          </div>
+          <div>
+            <h3>GHOST</h3>
+            <p>WPM: <strong id="ghost-final-wpm">0</strong></p>
+            <p>Accuracy: <strong id="ghost-final-accuracy">0%</strong></p>
+            <p>Score: <strong id="ghost-final-score">0</strong></p>
+          </div>
         </div>
+        <p id="completion-status"></p>
+        <p id="time-difference"></p>
+      </div>
 
-        <button id="close-rules-btn" type="button">
-            ← Back
-        </button>
-    </div>
-</div>
-
+      <div id="rules-modal" class="rules-modal" hidden>
+        <div class="rules-modal-content" role="dialog" aria-modal="true" aria-labelledby="rules-title">
+          <h2 id="rules-title">👻 Ghost Mode Rules</h2>
+          <div class="rules-content">
+            <div class="rule-group">
+              <h3>🏆 How to Win</h3>
+              <ul>
+                <li>If only one participant finishes, they win.</li>
+                <li>If both finish, the higher score wins.</li>
+                <li>If neither finishes, the higher score wins.</li>
+                <li>Equal scores result in a draw.</li>
+              </ul>
+            </div>
+            <div class="rule-group">
+              <h3>⏱️ Race Rules</h3>
+              <ul>
+                <li>Each race lasts 30 seconds.</li>
+                <li>Both participants receive the same passage.</li>
+                <li>If one finishes early, the other can continue typing.</li>
+                <li>The race ends when both finish or time runs out.</li>
+              </ul>
+            </div>
+          </div>
+          <button id="close-rules-btn" type="button">← Back</button>
+        </div>
+      </div>
     </section>
   </main>
 
