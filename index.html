@@ -38,7 +38,7 @@
     <div class="chaos-strip"><span class="warning-sticker">WARNING: UNSTABLE UI</span><span class="serial">KR-07 / INPUT LAB</span><span class="micro-copy">YOUR KEYBOARD IS THE CONTROLLER.</span></div>
 
     <section class="stats" aria-label="Live typing statistics">
-      <div class="stat"><span class="stat-label">Time left</span><span id="time" class="stat-value">30<span class="unit">s</span></span></div>
+      <div class="stat"><span id="time-stat-label" class="stat-label">Time left</span><span id="time" class="stat-value">30<span class="unit">s</span></span></div>
       <div class="stat"><span class="stat-label">Words / min</span><span id="wpm" class="stat-value">0</span></div>
       <div class="stat"><span class="stat-label">Accuracy</span><span id="accuracy" class="stat-value">100%</span></div>
       <div class="stat"><span class="stat-label">Errors</span><span id="mistakes" class="stat-value">0</span></div>
@@ -59,6 +59,7 @@
           <button class="time-btn" data-time="15" type="button">15 sec</button>
           <button class="time-btn active" data-time="30" type="button">30 sec</button>
           <button class="time-btn" data-time="60" type="button">60 sec</button>
+          <button class="time-btn" data-time="0" type="button" title="Untimed Free Run (Passage Completion)" aria-label="Untimed Free Run">∞ Free Run</button>
         </div>
         <div class="feature-buttons" aria-label="Experimental features">
           <button id="heatmap-btn" class="feature-btn" type="button">▦ Per-key error heatmap <span class="soon">NEW</span></button>
@@ -74,6 +75,7 @@
       <div id="result" class="result hidden" role="status"></div>
       <div class="controls">
         <button id="start-btn" class="btn btn-primary" type="button">▶ Start test</button>
+        <button id="stop-btn" class="btn btn-secondary hidden" type="button">■ Finish run</button>
         <button id="reset-btn" class="btn btn-secondary" type="button">↻ Reset</button>
         <button id="next-btn" class="btn btn-secondary" type="button">Next passage ↗</button>
         <button id="replay-btn" class="btn btn-replay hidden" type="button">▶ Watch Replay</button>

@@ -11,12 +11,14 @@ const $ = (id) => (isBrowser ? document.getElementById(id) : null);
 const passageEl = $('passage'),
   inputEl = $('typing-input'),
   timeEl = $('time'),
+  timeStatLabelEl = $('time-stat-label'),
   wpmEl = $('wpm'),
   accuracyEl = $('accuracy'),
   mistakesEl = $('mistakes'),
   bestEl = $('best'),
   resultEl = $('result'),
   startBtn = $('start-btn'),
+  stopBtn = $('stop-btn'),
   resetBtn = $('reset-btn'),
   nextBtn = $('next-btn'),
   replayBtn = $('replay-btn'),
@@ -40,6 +42,8 @@ let currentPassage = '',
   startTime = null;
   let testState = 'READY';   // 'READY' | 'RUNNING' | 'COMPLETED'
 let finishTimeout = null;
+
+let lastResultSummary = '';
 
 let bestWPM = (typeof localStorage !== 'undefined' && Number(localStorage.getItem('keyrush-best-wpm'))) || 0;
 if (bestEl) bestEl.textContent = bestWPM;
@@ -205,9 +209,10 @@ function drawGraph() {
 
   // Time axis markers
   chartCtx.textAlign = 'center';
-  const intervals = 5;
-  for (let s = 0; s <= timeLimit; s += intervals) {
-    const x = padLeft + (s / timeLimit) * plotW;
+  const graphLimit = timeLimit > 0 ? timeLimit : Math.max(15, Math.ceil((timeLeft || 1) / 5) * 5);
+  const intervals = graphLimit <= 30 ? 5 : 10;
+  for (let s = 0; s <= graphLimit; s += intervals) {
+    const x = padLeft + (s / graphLimit) * plotW;
     chartCtx.fillText(s + 's', x, h - 10);
   }
 
@@ -223,7 +228,7 @@ function drawGraph() {
   // WPM curve
   chartCtx.beginPath();
   wpmHistory.forEach((pt, idx) => {
-    const x = padLeft + (pt.time / timeLimit) * plotW;
+    const x = padLeft + (pt.time / graphLimit) * plotW;
     const clampedWPM = Math.min(Math.max(pt.wpm, 0), maxWPM);
     const y = padTop + plotH - (clampedWPM / maxWPM) * plotH;
     if (idx === 0) chartCtx.moveTo(x, y);
@@ -241,7 +246,7 @@ function drawGraph() {
   
   // Data point markers
   wpmHistory.forEach((pt) => {
-    const x = padLeft + (pt.time / timeLimit) * plotW;
+    const x = padLeft + (pt.time / graphLimit) * plotW;
     const clampedWPM = Math.min(Math.max(pt.wpm, 0), maxWPM);
     const y = padTop + plotH - (clampedWPM / maxWPM) * plotH;
     chartCtx.beginPath();
@@ -255,7 +260,9 @@ function drawGraph() {
 }
 
 function recordGraphSample() {
-  const elapsedSec = timeLimit - timeLeft;
+  const elapsedSec = timeLimit === 0
+    ? (startTime ? Math.floor((Date.now() - startTime) / 1000) : timeLeft)
+    : (timeLimit - timeLeft);
   if (elapsedSec <= 0 && wpmHistory.length === 0) {
     wpmHistory.push({ time: 0, wpm: 0 });
     drawGraph();
@@ -421,13 +428,26 @@ function handleInput(event) {
     });
   }
 
-  if (charIndex === currentPassage.length) finishTest();
+  const isPassageComplete = charIndex === currentPassage.length && charStates[currentPassage.length - 1] === 'correct';
+  if (isPassageComplete) finishTest();
 }
 
 if (inputEl) {
   inputEl.addEventListener('paste', handlePaste);
   inputEl.addEventListener('keydown', handleKeyDown);
   inputEl.addEventListener('input', handleInput);
+  inputEl.addEventListener('focus', () => {
+    if (typeof soundEngine !== 'undefined') soundEngine.ensureContext();
+  });
+  inputEl.addEventListener('pointerdown', () => {
+    if (typeof soundEngine !== 'undefined') soundEngine.ensureContext();
+  });
+}
+
+if (typeof document !== 'undefined' && document.addEventListener) {
+  document.addEventListener('pointerdown', () => {
+    if (typeof soundEngine !== 'undefined') soundEngine.ensureContext();
+  }, { once: true });
 }
 
 function calculateWPM() {
@@ -445,10 +465,14 @@ function calculateAccuracy() {
 }
 
 function updateStats() {
-  wpmEl.textContent = calculateWPM();
-  accuracyEl.textContent = `${calculateAccuracy()}%`;
-  mistakesEl.textContent = mistakes;
-  timeEl.innerHTML = `${timeLeft}<span class="unit">s</span>`;
+  if (wpmEl) wpmEl.textContent = calculateWPM();
+  if (accuracyEl) accuracyEl.textContent = `${calculateAccuracy()}%`;
+  if (mistakesEl) mistakesEl.textContent = mistakes;
+  if (timeEl) timeEl.innerHTML = `${timeLeft}<span class="unit">s</span>`;
+  const timeLabel = $('time-stat-label');
+  if (timeLabel) {
+    timeLabel.textContent = timeLimit === 0 ? 'Time elapsed' : 'Time left';
+  }
 }
 
 function startTest() {
@@ -463,36 +487,46 @@ function startTimer() {
   clearInterval(timer);
   isTyping = true;
   startTime = Date.now();
+  timeLeft = timeLimit === 0 ? 0 : timeLimit;
   sessionReplayEvents = [{ t: 0, val: '', cursor: 0, wpm: 0, errors: 0 }];
   if (replayBtn) replayBtn.classList.add('hidden');
-  statusEl.textContent = 'TEST IN PROGRESS';
+  if (stopBtn) stopBtn.classList.remove('hidden');
+  statusEl.textContent = timeLimit === 0 ? 'FREE RUN (UNTIMED)' : 'TEST IN PROGRESS';
   wpmHistory = [{ time: 0, wpm: 0 }];
   drawGraph();
   timer = setInterval(() => {
-    timeLeft--;
-    if (timeLeft <= 0) {
+    if (timeLimit === 0) {
+      timeLeft++;
+      timeEl.innerHTML = `${timeLeft}<span class="unit">s</span>`;
+      wpmEl.textContent = calculateWPM();
+      recordGraphSample();
+    } else {
+      timeLeft--;
+      if (timeLeft <= 0) {
         timeLeft = 0;
         clearInterval(timer);
-        finishTimeout = setTimeout(finishTest, 120);   // changed
+        finishTimeout = setTimeout(finishTest, 120);
+      }
+      timeEl.innerHTML = `${timeLeft}<span class="unit">s</span>`;
+      wpmEl.textContent = calculateWPM();
+      recordGraphSample();
     }
-    timeEl.innerHTML = `${timeLeft}<span class="unit">s</span>`;
-    wpmEl.textContent = calculateWPM();
-    recordGraphSample();
-}, 1000);
+  }, 1000);
 }
 
 
 function finishTest() {
- if (testState === 'COMPLETED') return;   // results only once
-testState = 'COMPLETED';
-clearInterval(timer);
-clearTimeout(finishTimeout);
-finishTimeout = null;
+  if (testState === 'COMPLETED' || !isTyping) return;
+  testState = 'COMPLETED';
+  if (timer) clearInterval(timer);
+  clearTimeout(finishTimeout);
+  finishTimeout = null;
 
   timer = null;
   isTyping = false;
-  inputEl.disabled = true;
-  startBtn.disabled = false;
+  if (inputEl) inputEl.disabled = true;
+  if (startBtn) startBtn.disabled = false;
+  if (stopBtn) stopBtn.classList.add('hidden');
   if (replayBtn) replayBtn.classList.add('hidden');
   if (typeof closeReplayModal === 'function') closeReplayModal();
 
@@ -526,15 +560,28 @@ finishTimeout = null;
     breakdownStr = ` · Weak keys: ${details.join(', ')}`;
   }
 
-  resultEl.classList.remove('hidden');
-  resultEl.textContent =
-    `Test complete · ${finalWPM} WPM · ${mistakes} errors${breakdownStr}`;
+  lastResultSummary = '';
+  const elapsedSecStr = startTime ? ((Date.now() - startTime) / 1000).toFixed(1) : timeLeft;
+  const errorLabel = mistakes === 1 ? 'error' : 'errors';
+  const cleanTag = mistakes === 0 ? ' (Clean run)' : '';
+  if (timeLimit === 0) {
+    lastResultSummary =
+      `Completed in ${elapsedSecStr}s · ${finalWPM} WPM · ${mistakes} ${errorLabel}${cleanTag}${breakdownStr}`;
+  } else {
+    lastResultSummary =
+      `Test complete · ${finalWPM} WPM · ${mistakes} ${errorLabel}${cleanTag}${breakdownStr}`;
+  }
+
+  if (resultEl) {
+    resultEl.classList.remove('hidden');
+    resultEl.textContent = lastResultSummary;
+  }
 
   if (startTime) {
     sessionReplayEvents.push({
       t: Date.now() - startTime,
-      val: inputEl.value,
-      cursor: inputEl.value.length,
+      val: inputEl ? inputEl.value : '',
+      cursor: inputEl ? inputEl.value.length : 0,
       wpm: finalWPM,
       errors: mistakes
     });
@@ -556,22 +603,26 @@ testState = 'READY';
   isPasting = false;
   clearTimeout(pasteResetTimeout);
   startTime = null;
+  lastResultSummary = '';
   charIndex = 0;
   mistakes = 0;
   totalTyped = 0;
   correctTyped = 0;
-  timeLeft = timeLimit;
-  inputEl.value = '';
-  inputEl.disabled = false;
+  timeLeft = timeLimit === 0 ? 0 : timeLimit;
+  if (inputEl) {
+    inputEl.value = '';
+    inputEl.disabled = false;
+  }
   charStates = new Array(currentPassage.length).fill('');
-  resultEl.classList.add('hidden');
-  statusEl.textContent = 'READY WHEN YOU ARE';
+  if (resultEl) resultEl.classList.add('hidden');
+  if (statusEl) statusEl.textContent = 'READY WHEN YOU ARE';
   wpmHistory = [];
   drawGraph();
   updateHeatmap(true);
   renderPassage();
   updateStats();
-  startBtn.disabled = false;
+  if (startBtn) startBtn.disabled = false;
+  if (stopBtn) stopBtn.classList.add('hidden');
   if (replayBtn) replayBtn.classList.add('hidden');
   if (typeof closeReplayModal === 'function') closeReplayModal();
 }
@@ -582,6 +633,17 @@ if (startBtn) {
     if (testState !== 'READY') return;
     startTest();
     if (inputEl) inputEl.focus();
+  });
+}
+
+if (stopBtn) {
+  stopBtn.addEventListener('click', () => {
+    if (!isTyping) return;
+    if (totalTyped === 0) {
+      resetTest();
+      return;
+    }
+    finishTest();
   });
 }
 
@@ -799,17 +861,17 @@ function playReplay() {
     replayCurrentTime = 0;
   }
   replayIsPlaying = true;
-  replayLastFrameTime = performance.now();
+  replayLastFrameTime = typeof performance !== 'undefined' ? performance.now() : Date.now();
   if (replayPlayBtn) replayPlayBtn.textContent = '❚❚ Pause';
   if (replayStatusEl) replayStatusEl.textContent = 'PLAYING';
-  cancelAnimationFrame(replayAnimFrame);
-  replayAnimFrame = requestAnimationFrame(replayLoop);
+  if (typeof cancelAnimationFrame === 'function') cancelAnimationFrame(replayAnimFrame);
+  if (typeof requestAnimationFrame === 'function') replayAnimFrame = requestAnimationFrame(replayLoop);
 }
 
 function pauseReplay() {
   replayIsPlaying = false;
   replayLastFrameTime = null;
-  cancelAnimationFrame(replayAnimFrame);
+  if (typeof cancelAnimationFrame === 'function') cancelAnimationFrame(replayAnimFrame);
   if (replayPlayBtn && replayCurrentTime < replayDuration) {
     replayPlayBtn.textContent = '▶ Play';
   }
@@ -1674,6 +1736,15 @@ if (typeof module !== 'undefined' && module.exports) {
     updateHeatmap,
     resetTest,
     finishTest,
+    startTimer,
+    getTimeLimit: () => timeLimit,
+    setTimeLimit: (v) => { timeLimit = v; },
+    getTimeLeft: () => timeLeft,
+    setTimeLeft: (v) => { timeLeft = v; },
+    getTimer: () => timer,
+    getSessionReplayEvents: () => sessionReplayEvents,
+    getStartTime: () => startTime,
+    setStartTime: (v) => { startTime = v; },
     handleKeyDown,
     handleInput,
     handlePaste,
@@ -1693,6 +1764,10 @@ if (typeof module !== 'undefined' && module.exports) {
     }),
     setTestPassage: (p) => { currentPassage = p; },
     setTestTyping: (v) => { isTyping = v; },
+    setTestTotalTyped: (v) => { totalTyped = v; },
+    setTestCorrectTyped: (v) => { correctTyped = v; },
+    setTestMistakes: (v) => { mistakes = v; },
+    getLastResultSummary: () => lastResultSummary,
     SoundEngine,
     soundEngine,
     sanitizeCustomPassage,
