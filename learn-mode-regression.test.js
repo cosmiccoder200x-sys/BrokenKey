@@ -263,13 +263,17 @@ test('regular typing sessions continue recording replay events after Learn Mode'
   input.dispatchEvent(new Event('input'));
 
   const eventsDuringTyping = engine.getSessionReplayEvents();
-  assert.ok(eventsDuringTyping.length > 1, 'regular typing should record changes');
+  const replayEventCountDuringTyping = eventsDuringTyping.length;
+  assert.ok(replayEventCountDuringTyping > 1, 'regular typing should record changes');
   assert.equal(eventsDuringTyping.at(-1).val, 'Replay capture');
 
   engine.finishTest();
 
   const replayButton = app.elements.get('replay-btn');
-  assert.ok(engine.getSessionReplayEvents().length > eventsDuringTyping.length);
+  assert.ok(
+    engine.getSessionReplayEvents().length > replayEventCountDuringTyping,
+    'finishing a regular session should append a final replay event'
+  );
   assert.equal(replayButton.classList.contains('hidden'), false, 'completed regular sessions should expose replay');
 
   engine.resetTest();
