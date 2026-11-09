@@ -168,8 +168,8 @@ function loadTypingEngine() {
   if (!fs.existsSync(scriptPath)) return null;
   const scriptCode = fs.readFileSync(scriptPath, 'utf8');
   const moduleMock = { exports: {} };
-  const execute = new Function('document', 'window', 'localStorage', 'KeyboardEvent', 'Event', 'module', 'exports', scriptCode);
-  execute(documentMock, windowMock, storageMock, KeyboardEvent, Event, moduleMock, moduleMock.exports);
+  const execute = new Function('document', 'window', 'localStorage', 'KeyboardEvent', 'Event', 'module', 'exports', 'setInterval', 'clearInterval', 'setTimeout', 'clearTimeout', 'requestAnimationFrame', 'cancelAnimationFrame', scriptCode);
+  execute(documentMock, windowMock, storageMock, function MockKeyboardEvent() {}, Event, moduleMock, moduleMock.exports, setInterval, clearInterval, setTimeout, clearTimeout, () => 1, () => {});
   return { elements, window: windowMock, storage: values, engine: moduleMock.exports };
 }
 
