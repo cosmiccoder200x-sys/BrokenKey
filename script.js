@@ -38,6 +38,8 @@ let currentPassage = '',
   timeLeft = 30,
   timeLimit = 30,
   startTime = null;
+let isLearningSession = false;
+let learningSessionCompleteHandler = null;
 
 let bestWPM = (typeof localStorage !== 'undefined' && Number(localStorage.getItem('keyrush-best-wpm'))) || 0;
 if (bestEl) bestEl.textContent = bestWPM;
@@ -408,7 +410,7 @@ function handleInput(event) {
   renderPassage();
   updateStats();
 
-  if (isTyping && startTime && typeof sessionReplayEvents !== 'undefined') {
+  if (isTyping && !isLearningSession && startTime && typeof sessionReplayEvents !== 'undefined') {
     sessionReplayEvents.push({
       t: Date.now() - startTime,
       val: typed,
@@ -445,17 +447,25 @@ function updateStats() {
   wpmEl.textContent = calculateWPM();
   accuracyEl.textContent = `${calculateAccuracy()}%`;
   mistakesEl.textContent = mistakes;
-  timeEl.innerHTML = `${timeLeft}<span class="unit">s</span>`;
+  if (isLearningSession) timeEl.textContent = 'UNTIMED';
+  else timeEl.innerHTML = `${timeLeft}<span class="unit">s</span>`;
 }
 
 function startTimer() {
   isTyping = true;
   startTime = Date.now();
-  sessionReplayEvents = [{ t: 0, val: '', cursor: 0, wpm: 0, errors: 0 }];
+  sessionReplayEvents = isLearningSession ? [] : [{ t: 0, val: '', cursor: 0, wpm: 0, errors: 0 }];
   if (replayBtn) replayBtn.classList.add('hidden');
-  statusEl.textContent = 'TEST IN PROGRESS';
+  statusEl.textContent = isLearningSession ? 'LEARNING IN PROGRESS' : 'TEST IN PROGRESS';
   wpmHistory = [{ time: 0, wpm: 0 }];
   drawGraph();
+
+  // Learn Mode is deliberately untimed and does not create replay events.
+  if (isLearningSession) {
+    if (timeEl) timeEl.textContent = 'UNTIMED';
+    return;
+  }
+
   timer = setInterval(() => {
     timeLeft--;
     if (timeLeft <= 0) {
@@ -466,11 +476,12 @@ function startTimer() {
     timeEl.innerHTML = `${timeLeft}<span class="unit">s</span>`;
     wpmEl.textContent = calculateWPM();
     recordGraphSample();
-}, 1000);
+  }, 1000);
 }
 
 
 function finishTest() {
+  const completedLearningSession = isLearningSession;
   if (timeLeft > 0) clearInterval(timer);
 
   timer = null;
@@ -480,7 +491,7 @@ function finishTest() {
   if (replayBtn) replayBtn.classList.add('hidden');
   if (typeof closeReplayModal === 'function') closeReplayModal();
 
-  statusEl.textContent = 'TEST COMPLETE';
+  statusEl.textContent = completedLearningSession ? 'LEARNING PASSAGE COMPLETE' : 'TEST COMPLETE';
 
   renderPassage();
   updateHeatmap();
@@ -488,6 +499,26 @@ function finishTest() {
 
   const finalWPM = calculateWPM();
   const finalAccuracy = calculateAccuracy();
+
+  if (completedLearningSession) {
+    resultEl.classList.remove('hidden');
+    resultEl.textContent = `Learning passage complete · ${finalWPM} WPM · ${finalAccuracy}% accuracy`;
+    updateHeatmap(true);
+    if (bestEl) bestEl.textContent = bestWPM;
+    const completionHandler = learningSessionCompleteHandler;
+    learningSessionCompleteHandler = null;
+    if (typeof completionHandler === 'function') {
+      completionHandler({
+        wpm: finalWPM,
+        accuracy: finalAccuracy,
+        mistakes,
+        totalTyped,
+        correctTyped,
+        elapsedSeconds: startTime ? Math.max(0, (Date.now() - startTime) / 1000) : 0
+      });
+    }
+    return;
+  }
 
   if (finalWPM > bestWPM) {
     bestWPM = finalWPM;
@@ -530,7 +561,11 @@ function finishTest() {
 }
 
 
-function resetTest() {
+function resetTest(options = {}) {
+  if (!options || options.preserveLearningSession !== true) {
+    isLearningSession = false;
+    learningSessionCompleteHandler = null;
+  }
   clearInterval(timer);
   timer = null;
   isTyping = false;
@@ -555,6 +590,40 @@ function resetTest() {
   startBtn.disabled = false;
   if (replayBtn) replayBtn.classList.add('hidden');
   if (typeof closeReplayModal === 'function') closeReplayModal();
+}
+
+function startLearningSession(passage, onComplete) {
+  if (!inputEl || !passageEl || typeof passage !== 'string' || passage.trim().length === 0) return false;
+
+  isLearningSession = true;
+  learningSessionCompleteHandler = typeof onComplete === 'function' ? onComplete : null;
+  isCustomPassage = false;
+  customPassageText = '';
+  currentPassage = passage;
+  resetTest({ preserveLearningSession: true });
+  inputEl.maxLength = passage.length;
+  inputEl.disabled = false;
+  startBtn.disabled = true;
+  startTimer();
+  inputEl.focus();
+  return true;
+}
+
+function cancelLearningSession() {
+  if (!isLearningSession) return false;
+  resetTest();
+  return true;
+}
+
+function getLearningMetrics() {
+  return {
+    wpm: calculateWPM(),
+    accuracy: calculateAccuracy(),
+    mistakes,
+    totalTyped,
+    correctTyped,
+    elapsedSeconds: startTime ? Math.max(0, (Date.now() - startTime) / 1000) : 0
+  };
 }
 
 if (startBtn) {
@@ -1643,7 +1712,13 @@ if (typeof window !== 'undefined') window.addEventListener('keydown', (e) => {
 // Initialize Audio UI state on page load
 updateAudioUI();
 
-
+if (isBrowser) {
+  window.BrokenKeyTyping = Object.freeze({
+    startLearningSession,
+    cancelLearningSession,
+    getMetrics: getLearningMetrics
+  });
+}
 
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
@@ -1675,6 +1750,9 @@ if (typeof module !== 'undefined' && module.exports) {
     }),
     setTestPassage: (p) => { currentPassage = p; },
     setTestTyping: (v) => { isTyping = v; },
+    startLearningSession,
+    cancelLearningSession,
+    getLearningMetrics,
     SoundEngine,
     soundEngine,
     sanitizeCustomPassage,
