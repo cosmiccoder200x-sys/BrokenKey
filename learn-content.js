@@ -18,6 +18,7 @@ export const LEARN_LESSONS = Object.freeze([
     recallQuestion: 'What is the difference between a database and a DBMS?',
     expectedAnswer: 'A database is an organized collection of data. A DBMS is the software that lets users and applications define, create, query, update, and control access to that database.',
     references: [
+      { label: 'MongoDB: database concepts and DBMS', url: 'https://www.mongodb.com/resources/basics/databases/databases' },
       { label: 'PostgreSQL tutorial: architecture and database concepts', url: 'https://www.postgresql.org/docs/current/tutorial.html' }
     ]
   },
@@ -27,10 +28,10 @@ export const LEARN_LESSONS = Object.freeze([
     title: 'SQL vs NoSQL',
     difficulty: 'Beginner',
     learningObjective: 'Compare relational databases with common non-relational data models without assuming one is always better.',
-    explanation: 'The phrase “SQL vs NoSQL” is shorthand for comparing relational systems with non-relational database models. SQL (Structured Query Language) is a query language, not a database model. Relational systems organize data into tables with defined columns and relationships. NoSQL is a broad label for several non-relational models, including document, key-value, graph, and wide-column databases. Their structures and query interfaces vary. Database choice depends on relationships, access patterns, consistency requirements, operational needs, and how the data is expected to evolve.',
+    explanation: 'The phrase “SQL vs NoSQL” is shorthand for comparing relational systems with non-relational database models. SQL (Structured Query Language) is a query language, not a database model. Relational systems organize data into tables with defined columns and relationships. NoSQL, often expanded as “Not Only SQL,” is a broad label for several non-relational models, including document, key-value, graph, and wide-column databases. Their structures and query interfaces vary. Database choice depends on relationships, access patterns, consistency requirements, operational needs, and how the data is expected to evolve.',
     exampleTitle: 'Example: user profiles',
     practicalExample: 'A relational model might store users and addresses in related tables. A document database might store a user profile and its settings together in a JSON-like document. Both can be valid designs depending on how the application reads and updates the information.',
-    typingPassage: 'Relational databases organize information into tables with rows and columns. SQL is commonly used to define those tables and query their data. NoSQL is a broad group of non-relational database models, including document, key-value, graph, and wide-column stores. A document database might keep a user profile and settings together in one JSON-like document. Neither approach is automatically better. Choose by considering relationships, query patterns, consistency needs, scale, and how the data model may change.',
+    typingPassage: 'Relational databases organize information into tables with rows and columns. SQL is commonly used to define those tables and query their data. NoSQL, often expanded as “Not Only SQL,” is a broad group of non-relational database models, including document, key-value, graph, and wide-column stores. A document database might keep a user profile and settings together in one JSON-like document. Neither approach is automatically better. Choose by considering relationships, query patterns, consistency needs, scale, and how the data model may change.',
     recallQuestion: 'Name one structural difference between relational databases and NoSQL databases, and explain why neither is always the better choice.',
     expectedAnswer: 'Relational databases organize data into related tables with rows and columns. NoSQL databases use different models, such as documents, key-value pairs, graphs, or wide columns. The best choice depends on the application’s data relationships, queries, consistency needs, and scale.',
     references: [
@@ -51,6 +52,7 @@ export const LEARN_LESSONS = Object.freeze([
     recallQuestion: 'What is an API, and what does it allow one application to do?',
     expectedAnswer: 'An API is a defined interface or contract that lets software components communicate. It allows one application to use data or functionality exposed by another component without knowing its internal implementation.',
     references: [
+      { label: 'MDN: API definition and contract', url: 'https://developer.mozilla.org/en-US/docs/Glossary/API' },
       { label: 'MDN: Introduction to client-side APIs', url: 'https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Client-side_APIs/Introduction' }
     ]
   },
@@ -60,13 +62,15 @@ export const LEARN_LESSONS = Object.freeze([
     title: 'Understanding REST APIs',
     difficulty: 'Intermediate',
     learningObjective: 'Describe resources, HTTP methods, and stateless requests in a REST-style API.',
-    explanation: 'REST (Representational State Transfer) is an architectural style for networked systems. A REST-style API commonly models information as resources identified by URLs. Clients use HTTP methods to express intent: GET retrieves a representation, POST submits data for processing, PATCH applies a partial modification, and DELETE requests removal. REST emphasizes stateless interactions: each request carries the information needed to process it, rather than relying on hidden client session state on the server.',
+    explanation: 'REST (Representational State Transfer) is an architectural style for networked systems. A REST-style API commonly models information as resources identified by URLs. Clients use HTTP (Hypertext Transfer Protocol) methods to express intent: GET retrieves a representation, POST submits data for processing, PATCH applies a partial modification, and DELETE requests removal. REST emphasizes stateless interactions: each request carries the information needed to process it, rather than relying on hidden client session state on the server.',
     exampleTitle: 'Example: a task service',
     practicalExample: 'A task API might expose /tasks/42. A client can GET that URL to retrieve the task, PATCH it to change its title, or DELETE it when removal is intended. The response includes an HTTP status code describing the outcome.',
-    typingPassage: 'REST is an architectural style for designing networked APIs around resources. A resource might be a task, user, or product, identified by a URL. Clients use HTTP methods to express the operation: GET retrieves a representation, POST submits data, PATCH applies a partial update, and DELETE requests removal. A REST-style service is designed around stateless requests, so each request contains the information needed to process it. Status codes communicate the outcome, such as success or a missing resource.',
+    typingPassage: 'REST is an architectural style for designing networked APIs around resources. A resource might be a task, user, or product, identified by a URL. Clients use Hypertext Transfer Protocol (HTTP) methods to express the operation: GET retrieves a representation, POST submits data, PATCH applies a partial update, and DELETE requests removal. A REST-style service is designed around stateless requests, so each request contains the information needed to process it. Status codes communicate the outcome, such as success or a missing resource.',
     recallQuestion: 'How do HTTP methods help a client interact with a resource in a REST-style API?',
     expectedAnswer: 'HTTP methods communicate the intended operation. GET retrieves a representation, POST submits data for processing, PATCH applies a partial modification, and DELETE requests removal. The server communicates the outcome through an HTTP status code.',
     references: [
+      { label: 'MDN: REST architectural constraints', url: 'https://developer.mozilla.org/en-US/docs/Glossary/REST' },
+      { label: 'MDN: HTTP overview and statelessness', url: 'https://developer.mozilla.org/en-US/docs/Web/HTTP' },
       { label: 'MDN: HTTP request methods', url: 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Methods' },
       { label: 'MDN: HTTP response status codes', url: 'https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status' }
     ]
