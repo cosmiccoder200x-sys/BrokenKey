@@ -504,6 +504,10 @@ function finishTest() {
     resultEl.classList.remove('hidden');
     resultEl.textContent = `Learning passage complete · ${finalWPM} WPM · ${finalAccuracy}% accuracy`;
     updateHeatmap(true);
+    keyMistakes = {};
+    keySubstitutions = {};
+    lastTrackedKeydownPos = -1;
+    lastProcessedLength = 0;
     if (bestEl) bestEl.textContent = bestWPM;
     const completionHandler = learningSessionCompleteHandler;
     learningSessionCompleteHandler = null;
@@ -597,6 +601,10 @@ function startLearningSession(passage, onComplete) {
 
   isLearningSession = true;
   learningSessionCompleteHandler = typeof onComplete === 'function' ? onComplete : null;
+  keyMistakes = {};
+  keySubstitutions = {};
+  lastTrackedKeydownPos = -1;
+  lastProcessedLength = 0;
   isCustomPassage = false;
   customPassageText = '';
   currentPassage = passage;
