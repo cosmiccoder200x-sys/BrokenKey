@@ -72,3 +72,12 @@ test('due queue handles simultaneous lessons and category filtering safely',()=>
   assert.equal(q.due.filter(x=>x.categoryId===category).length,1);
   assert.equal(buildReviewQueue(p,LEARN_LESSONS,'2026-11-20T12:00:00.000Z').due.length,0);
 });
+
+test('damaged v2 envelope falls back to v1 without erasing learner history',()=>{
+  const s=storage();
+  s.setItem(LEARN_PROGRESS_KEY,JSON.stringify({version:2,completedLessonIds:null,reviewsByLesson:{},bestAccuracyByLesson:{}}));
+  s.setItem(LEGACY_LEARN_PROGRESS_KEY,JSON.stringify({version:1,completedLessonIds:[ids[0]],bestAccuracyByLesson:{[ids[0]]:88},lastAccessedLessonId:ids[0]}));
+  const restored=loadProgress(s,ids);
+  assert.deepEqual(restored.completedLessonIds,[ids[0]]);
+  assert.equal(restored.bestAccuracyByLesson[ids[0]],88);
+});
