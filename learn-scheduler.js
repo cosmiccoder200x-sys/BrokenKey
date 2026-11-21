@@ -95,7 +95,7 @@ export function deriveMastery(record) {
   if (!record) return 'New';
   if (record.reviewCount === 0) return 'Learning';
   if (record.lastRating === 'Again') return 'Needs Attention';
-  if (record.reviewCount >= 3 && record.repetitions >= 3 && record.intervalMinutes >= 14 * 1440) return 'Strong';
+  if (record.reviewCount >= 3 && record.repetitions >= 3 && record.intervalMinutes >= 14 * 1440 && ['Good','Easy'].includes(record.lastRating)) return 'Strong';
   if (record.repetitions >= 2 && record.intervalMinutes >= 3 * 1440) return 'Developing';
   return 'Reviewing';
 }
