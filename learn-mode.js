@@ -3,10 +3,13 @@ import {
   completeLesson,
   getProgressSummary,
   loadProgress,
+  initializeLegacyReviews,
+  rateLessonRecall,
   recordLessonAccuracy,
   saveProgress,
   setLastAccessed
 } from './learn-progress.js';
+import { buildReviewQueue, getReviewStats, deriveMastery } from './learn-scheduler.js';
 
 const isLearnPage = typeof document !== 'undefined' && document.body?.hasAttribute('data-learn-app');
 
@@ -16,6 +19,7 @@ if (isLearnPage) {
   const state = {
     activeCategory: 'all',
     activeLesson: null,
+    activeReview: false,
     activeStage: 'understand',
     typingComplete: false,
     typingMetrics: null,
@@ -32,12 +36,15 @@ if (isLearnPage) {
   }
 
   const storage = getStorage();
-  state.progress = loadProgress(storage, lessonIds);
+  state.progress = initializeLegacyReviews(loadProgress(storage, lessonIds), Date.now(), lessonIds);
+  // v1 is kept as a recovery backup; only the versioned v2 key is written.
+  saveProgress(storage, state.progress);
 
   function persistProgress() {
     saveProgress(storage, state.progress);
     renderProgress();
     renderLessons();
+    renderReviewDashboard();
   }
 
   function createText(tag, className, value) {
@@ -61,6 +68,54 @@ if (isLearnPage) {
     const resume = $('learn-resume-button');
     const hasLastLesson = LEARN_LESSONS.some((lesson) => lesson.id === state.progress.lastAccessedLessonId);
     if (resume) resume.hidden = !hasLastLesson;
+  }
+
+
+  function formatReviewDate(timestamp) {
+    return new Date(timestamp).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+  }
+
+  function renderReviewDashboard() {
+    const now = Date.now();
+    const queue = buildReviewQueue(state.progress, LEARN_LESSONS, now);
+    const stats = getReviewStats(state.progress, LEARN_LESSONS, now);
+    const selected = $('learn-review-category').value;
+    const include = (item) => selected === 'all' || item.categoryId === selected;
+    const due = queue.due.filter(include), upcoming = queue.upcoming.filter(include);
+    $('learn-stat-completed').textContent = String(state.progress.completedLessonIds.length);
+    $('learn-stat-reviews').textContent = String(stats.reviewsCompleted);
+    $('learn-stat-due').textContent = String(queue.due.length);
+    $('learn-stat-strong').textContent = String(stats.distribution.Strong);
+    $('learn-overdue-count').textContent = '(' + due.length + ')';
+    $('learn-review-next').hidden = due.length === 0;
+    $('learn-mastery-summary').textContent =
+      'Mastery: ' + Object.entries(stats.distribution).map(([name,count]) => name + ' ' + count).join(' · ') +
+      '. Ratings reflect self-assessment, not automated answer grading.';
+
+    function fill(containerId, items, isDue) {
+      const container = $(containerId);
+      container.replaceChildren();
+      if (items.length === 0) {
+        container.append(createText('p','learn-review-empty',isDue ? 'Nothing due right now. Keep learning!' : 'No upcoming reviews scheduled.'));
+        return;
+      }
+      for (const item of items) {
+        const card = createText('div','learn-review-item');
+        const info = createText('div','learn-review-item-info');
+        info.append(
+          createText('strong','',item.title),
+          createText('span','',item.mastery + ' · ' + (isDue ? 'Due ' : 'Next ') + formatReviewDate(item.nextReviewAt))
+        );
+        const button = createText('button','btn btn-secondary',isDue ? 'Review ↗' : 'Review early ↗');
+        button.type = 'button';
+        button.setAttribute('aria-label','Review ' + item.title);
+        button.addEventListener('click',() => openLesson(item.lessonId,true));
+        card.append(info,button);
+        container.append(card);
+      }
+    }
+    fill('learn-due-list',due,true);
+    fill('learn-upcoming-list',upcoming,false);
   }
 
   function getVisibleLessons() {
@@ -99,6 +154,7 @@ if (isLearnPage) {
       const category = LEARN_CATEGORIES.find((item) => item.id === lesson.categoryId);
       const completed = state.progress.completedLessonIds.includes(lesson.id);
       const bestAccuracy = state.progress.bestAccuracyByLesson[lesson.id];
+      const mastery = deriveMastery(state.progress.reviewsByLesson[lesson.id]);
       const card = createText('button', 'learn-lesson-card');
       card.type = 'button';
       card.setAttribute('aria-label', `${lesson.title}, ${lesson.difficulty}${completed ? ', completed' : ''}. Open lesson.`);
@@ -114,7 +170,7 @@ if (isLearnPage) {
       const bottom = createText('span', 'learn-lesson-card-bottom');
       bottom.append(
         createText('span', '', bestAccuracy === undefined ? 'Not attempted' : `Best accuracy ${bestAccuracy}%`),
-        createText('strong', '', completed ? 'COMPLETED ✓' : `LESSON 0${LEARN_LESSONS.indexOf(lesson) + 1} ↗`)
+        createText('strong', '', completed ? mastery.toUpperCase() : `LESSON 0${LEARN_LESSONS.indexOf(lesson) + 1} ↗`)
       );
       card.append(top, heading, description, bottom);
       card.addEventListener('click', () => openLesson(lesson.id));
@@ -128,14 +184,18 @@ if (isLearnPage) {
     $('learn-lesson-view').hidden = true;
     renderProgress();
     renderLessons();
+    renderReviewDashboard();
+    state.activeReview = false;
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  function openLesson(lessonId) {
+  function openLesson(lessonId, review = false) {
     const lesson = LEARN_LESSONS.find((item) => item.id === lessonId);
     if (!lesson) return;
     cancelTypingSession();
     state.activeLesson = lesson;
+    state.activeReview = review;
+    state.answerRevealed = false;
     state.typingComplete = false;
     state.typingMetrics = null;
     state.progress = setLastAccessed(state.progress, lesson.id, lessonIds);
@@ -172,6 +232,7 @@ if (isLearnPage) {
 
     $('learn-lesson-position').textContent = `LESSON ${String(LEARN_LESSONS.indexOf(lesson) + 1).padStart(2, '0')} / ${String(LEARN_LESSONS.length).padStart(2, '0')}`;
     showStage('understand');
+    if (review) showStage('recall');
     $('learn-complete-panel').hidden = true;
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -179,7 +240,7 @@ if (isLearnPage) {
   function showStage(stage) {
     const allowed = ['understand', 'type', 'recall'];
     if (!allowed.includes(stage)) return;
-    if (stage === 'recall' && !state.typingComplete) return;
+    if (stage === 'recall' && !state.typingComplete && !state.activeReview) return;
     state.activeStage = stage;
     $('learn-understand-panel').hidden = stage !== 'understand';
     $('learn-type-panel').hidden = stage !== 'type';
@@ -241,15 +302,19 @@ if (isLearnPage) {
     }
     $('learn-answer-input').setCustomValidity('');
     $('learn-answer-input').disabled = true;
+    state.answerRevealed = true;
     $('learn-expected-answer').textContent = state.activeLesson.expectedAnswer;
     $('learn-answer-review').hidden = false;
     $('learn-submit-answer').hidden = true;
   }
 
-  function finishLesson() {
-    if (!state.activeLesson) return;
+  function finishLesson(rating) {
+    if (!state.activeLesson || !state.answerRevealed) return;
+    const now = Date.now();
     cancelTypingSession();
-    state.progress = completeLesson(state.progress, state.activeLesson.id, lessonIds);
+    state.progress = completeLesson(state.progress, state.activeLesson.id, lessonIds, now);
+    state.progress = rateLessonRecall(state.progress, state.activeLesson.id, rating, now, lessonIds);
+    state.answerRevealed = false;
     persistProgress();
     const summary = getProgressSummary(state.progress, lessonIds);
     const best = state.progress.bestAccuracyByLesson[state.activeLesson.id];
@@ -261,9 +326,12 @@ if (isLearnPage) {
     $('learn-complete-accuracy').textContent = best === undefined ? '—' : `${best}%`;
     $('learn-complete-count').textContent = `${summary.completed} / ${summary.total}`;
     const allDone = summary.completed === summary.total;
-    $('learn-complete-copy').textContent = allDone
-      ? 'You have completed all six initial lessons. Revisit any topic to reinforce it.'
-      : 'You completed the lesson and marked the concept as remembered. Your progress is saved on this device.';
+    $('learn-complete-title').textContent = rating === 'Again' ? 'Review scheduled.' : 'Knowledge reinforced.';
+    $('learn-complete-copy').textContent = rating === 'Again'
+      ? 'This topic needs more practice. A short review has been scheduled.'
+      : allDone ? 'You have completed all six initial lessons. Keep reviewing to build retention.'
+      : 'Your lesson progress and self-assessed recall are saved on this device.';
+    $('learn-next-review-date').textContent = 'Next review: ' + formatReviewDate(state.progress.reviewsByLesson[state.activeLesson.id].nextReviewAt);
     $('learn-next-lesson').textContent = allDone ? 'Back to all lessons ↗' : 'Next lesson ↗';
     $('learn-next-lesson').dataset.allDone = String(allDone);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -294,10 +362,14 @@ if (isLearnPage) {
   $('learn-start-typing').addEventListener('click', beginTyping);
   $('learn-retry-typing').addEventListener('click', beginTyping);
   $('learn-submit-answer').addEventListener('click', revealAnswer);
-  $('learn-remembered').addEventListener('click', finishLesson);
+  document.querySelectorAll('[data-recall-rating]').forEach((button) => {
+    button.addEventListener('click', () => finishLesson(button.dataset.recallRating));
+  });
   $('learn-review-again').addEventListener('click', () => {
     cancelTypingSession();
     state.typingComplete = false;
+    state.activeReview = false;
+    state.answerRevealed = false;
     $('learn-answer-input').disabled = false;
     $('learn-answer-input').value = '';
     $('learn-answer-review').hidden = true;
@@ -312,7 +384,21 @@ if (isLearnPage) {
   $('learn-answer-input').addEventListener('input', () => $('learn-answer-input').setCustomValidity(''));
 
   window.addEventListener('pagehide', cancelTypingSession);
+  LEARN_CATEGORIES.forEach((category) => {
+    const option = document.createElement('option');
+    option.value = category.id;
+    option.textContent = category.title;
+    $('learn-review-category').append(option);
+  });
+  $('learn-review-category').addEventListener('change', renderReviewDashboard);
+  $('learn-review-next').addEventListener('click', () => {
+    const category = $('learn-review-category').value;
+    const due = buildReviewQueue(state.progress, LEARN_LESSONS, Date.now()).due
+      .filter((item) => category === 'all' || item.categoryId === category);
+    if (due.length) openLesson(due[0].lessonId, true);
+  });
   renderFilters();
   renderProgress();
   renderLessons();
+  renderReviewDashboard();
 }
