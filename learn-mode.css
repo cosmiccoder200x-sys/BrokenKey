@@ -104,3 +104,27 @@ body.light-mode .learn-answer-review { background: rgba(84, 118, 0, .06); }
 @media (max-width: 820px) { .learn-intro { grid-template-columns: 1fr; } .learn-method { grid-template-columns: repeat(3, minmax(0, 1fr)); } .learn-method > div { grid-template-columns: 1fr; } .learn-method span { grid-row: auto; } .learn-lessons-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 600px) { .learn-page { padding: 28px 12px 22px; } .learn-topbar { align-items: flex-start; flex-wrap: wrap; } .learn-header-actions { width: 100%; justify-content: flex-start; } .learn-intro { padding: 23px 0 26px; } .learn-method { grid-template-columns: 1fr; } .learn-method > div { grid-template-columns: 30px 1fr; } .learn-method span { grid-row: span 2; } .learn-section-heading { align-items: flex-start; flex-direction: column; } .learn-lessons-grid { grid-template-columns: 1fr; } .learn-lesson-card { min-height: 170px; } .learn-stepper { gap: 4px; } .learn-step { gap: 5px; padding: 8px 6px; font-size: .52rem; } .learn-step span { display: none; } .learn-step-line { max-width: 14px; } .learn-stage-panel { padding: 16px; box-shadow: 4px 4px 0 var(--accent); } .learn-typing-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } .learn-input-hint, .learn-footer { flex-direction: column; } .learn-stage-actions { align-items: stretch; } .learn-stage-actions .btn { width: 100%; } .learn-complete-stats { grid-template-columns: 1fr; } }
 @media (prefers-reduced-motion: reduce) { .learn-page *, .learn-page *::before, .learn-page *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; } }
+/* Spaced repetition dashboard, scoped to Learn Mode. */
+.learn-review-dashboard { margin: 0 0 30px; padding: 20px; border: 1px solid var(--border); background: var(--panel); }
+.learn-review-topline { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+.learn-review-topline h3 { margin: 0; color: var(--text); font-size: 1.35rem; text-transform: uppercase; }
+.learn-review-metrics { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 8px; margin: 18px 0; }
+.learn-review-metrics > div { display: grid; gap: 6px; padding: 13px; border: 1px solid var(--border); background: var(--panel2); }
+.learn-review-metrics span { color: var(--muted); font: 700 .58rem ui-monospace,monospace; }
+.learn-review-metrics strong { color: var(--accent); font: 900 1.4rem ui-monospace,monospace; }
+.learn-review-filterline { display: flex; align-items: center; gap: 12px; margin: 12px 0; color: var(--muted); font: 700 .7rem ui-monospace,monospace; }
+.learn-review-filterline select { min-height: 34px; padding: 5px 9px; border: 1px solid var(--border); color: var(--text); background: var(--panel2); }
+.learn-review-columns { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; }
+.learn-review-columns h4 { margin: 8px 0 10px; color: var(--text); font-size: .85rem; text-transform: uppercase; }
+.learn-review-list { display: grid; align-content: start; gap: 8px; }
+.learn-review-item { display: flex; min-width: 0; align-items: center; justify-content: space-between; gap: 12px; padding: 12px; border: 1px solid var(--border); background: var(--panel2); }
+.learn-review-item-info { min-width: 0; display: grid; gap: 5px; }
+.learn-review-item-info strong { color: var(--text); font-size: .78rem; }
+.learn-review-item-info span { color: var(--muted); font-size: .65rem; overflow-wrap: anywhere; }
+.learn-review-empty { padding: 16px 12px; margin: 0; color: var(--muted); border: 1px dashed var(--border); font-size: .72rem; }
+.learn-review-item button { flex-shrink: 0; }
+.learn-mastery-summary { margin: 16px 0 0; color: var(--muted); font-size: .7rem; line-height: 1.6; }
+.learn-rating-note, .learn-next-review-date { color: var(--muted); font-size: .72rem; line-height: 1.6; }
+.learn-next-review-date { color: var(--accent) !important; font-weight: 800; }
+@media (max-width: 820px) { .learn-review-metrics { grid-template-columns: repeat(2,minmax(0,1fr)); } .learn-review-columns { grid-template-columns: 1fr; } }
+@media (max-width: 480px) { .learn-review-dashboard { padding: 13px; } .learn-review-item { align-items: flex-start; flex-direction: column; } .learn-review-item button { width: 100%; } }
