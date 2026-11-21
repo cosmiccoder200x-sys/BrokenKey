@@ -81,7 +81,7 @@ export function loadProgress(storage, validLessonIds = []) {
     if (newer) {
       try {
         const decoded = JSON.parse(newer);
-        if (isObject(decoded) && decoded.version === LEARN_PROGRESS_VERSION) return normalizeProgress(decoded,validLessonIds);
+        if (isObject(decoded) && decoded.version === LEARN_PROGRESS_VERSION && Array.isArray(decoded.completedLessonIds) && isObject(decoded.bestAccuracyByLesson) && isObject(decoded.reviewsByLesson)) return normalizeProgress(decoded,validLessonIds);
       } catch { /* Fall back to intact v1 data. */ }
     }
     const legacy = storage.getItem(LEGACY_LEARN_PROGRESS_KEY);
