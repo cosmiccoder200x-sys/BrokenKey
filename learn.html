@@ -51,6 +51,30 @@
         <div class="learn-progress-track" role="progressbar" aria-label="Completed lessons" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="learn-progress-bar"><span id="learn-progress-fill"></span></div>
       </section>
 
+      <section class="learn-review-dashboard" aria-labelledby="learn-review-title">
+        <div class="learn-review-topline">
+          <div><p class="learn-kicker">KEEP WHAT YOU LEARN</p><h3 id="learn-review-title">Your review queue</h3></div>
+          <button id="learn-review-next" class="btn btn-primary" type="button" hidden>Review next due ↗</button>
+        </div>
+        <div class="learn-review-metrics" aria-label="Learning analytics">
+          <div><span>LESSONS STUDIED</span><strong id="learn-stat-completed">0</strong></div>
+          <div><span>REVIEWS COMPLETED</span><strong id="learn-stat-reviews">0</strong></div>
+          <div><span>DUE NOW</span><strong id="learn-stat-due">0</strong></div>
+          <div><span>STRONG RETENTION</span><strong id="learn-stat-strong">0</strong></div>
+        </div>
+        <div class="learn-review-filterline">
+          <label for="learn-review-category">Filter reviews</label>
+          <select id="learn-review-category" aria-label="Filter reviews by topic">
+            <option value="all">All topics</option>
+          </select>
+        </div>
+        <div class="learn-review-columns">
+          <div><h4>Due today <span id="learn-overdue-count"></span></h4><div id="learn-due-list" class="learn-review-list"></div></div>
+          <div><h4>Upcoming reviews</h4><div id="learn-upcoming-list" class="learn-review-list"></div></div>
+        </div>
+        <p id="learn-mastery-summary" class="learn-mastery-summary" aria-live="polite"></p>
+      </section>
+
       <div id="learn-category-filters" class="learn-category-filters" aria-label="Filter lessons by category"></div>
       <div id="learn-lessons-grid" class="learn-lessons-grid" aria-live="polite"></div>
       <p id="learn-empty-state" class="learn-empty-state" hidden>No lessons are available in this category.</p>
@@ -113,7 +137,14 @@
           <span class="learn-card-label">REFERENCE ANSWER</span>
           <p id="learn-expected-answer"></p>
           <p class="learn-self-assessment">Compare the key ideas with your answer. This is a self-assessment, not an automated grade.</p>
-          <div class="learn-rating-actions"><button id="learn-remembered" class="btn btn-primary" type="button">I remembered it</button><button id="learn-review-again" class="btn btn-secondary" type="button">Review again</button></div>
+          <div class="learn-rating-actions" aria-label="Rate your own recall">
+            <button class="btn btn-secondary" type="button" data-recall-rating="Again">Again</button>
+            <button class="btn btn-secondary" type="button" data-recall-rating="Hard">Hard</button>
+            <button class="btn btn-primary" type="button" data-recall-rating="Good">Good</button>
+            <button class="btn btn-secondary" type="button" data-recall-rating="Easy">Easy</button>
+          </div>
+          <p class="learn-rating-note">Your rating changes when you review this lesson next. It is not an automated correctness score.</p>
+          <button id="learn-review-again" class="learn-text-button" type="button">← Read explanation instead</button>
         </article>
       </section>
 
@@ -121,7 +152,7 @@
         <span class="learn-complete-mark" aria-hidden="true">✓</span>
         <p class="learn-kicker">LESSON COMPLETED</p>
         <h3 id="learn-complete-title">Knowledge reinforced.</h3>
-        <p id="learn-complete-copy"></p>
+        <p id="learn-complete-copy"></p><p id="learn-next-review-date" class="learn-next-review-date"></p>
         <div class="learn-complete-stats"><div><span>BEST ACCURACY</span><strong id="learn-complete-accuracy">—</strong></div><div><span>LESSONS COMPLETED</span><strong id="learn-complete-count">0 / 6</strong></div></div>
         <div class="learn-stage-actions"><button id="learn-finish-back" class="btn btn-secondary" type="button">All lessons</button><button id="learn-next-lesson" class="btn btn-primary" type="button">Next lesson ↗</button></div>
       </section>
