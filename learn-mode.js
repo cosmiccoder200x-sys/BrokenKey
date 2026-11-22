@@ -84,7 +84,7 @@ if (isLearnPage) {
     const due = queue.due.filter(include), upcoming = queue.upcoming.filter(include);
     $('learn-stat-completed').textContent = String(state.progress.completedLessonIds.length);
     $('learn-stat-reviews').textContent = String(stats.reviewsCompleted);
-    $('learn-stat-due').textContent = String(queue.due.length);
+    $('learn-stat-due').textContent = String(due.length);
     $('learn-stat-strong').textContent = String(stats.distribution.Strong);
     $('learn-overdue-count').textContent = '(' + due.length + ')';
     $('learn-review-next').hidden = due.length === 0;
