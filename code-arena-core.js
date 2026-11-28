@@ -128,3 +128,9 @@ export function selectExercise(catalog, sessions, language) {
     (a.id < b.id ? -1 : a.id > b.id ? 1 : 0)
   )[0];
 }
+
+export function formatIndentation(source, language, indent) {
+  if (!LANGUAGES.includes(language) || !['  ', '    ', '\t'].includes(indent)) throw new TypeError('Invalid indentation');
+  const width = language === 'javascript' ? 2 : 4;
+  return source.replace(/^ +/gm, spaces => indent.repeat(Math.floor(spaces.length / width)) + ' '.repeat(spaces.length % width));
+}

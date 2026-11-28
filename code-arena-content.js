@@ -10,7 +10,7 @@ export const EXERCISES = Object.freeze([
   exercise('js-2', 'javascript', 2, 'Filter and map', ['operator', 'bracket', 'punctuation'], 'function positives(values) {\n  return values.filter(n => n > 0).map(n => n * 2);\n}'),
   exercise('js-3', 'javascript', 3, 'Group by category', ['keyword', 'bracket', 'indentation'], 'function group(items) {\n  const groups = new Map();\n  for (const item of items) {\n    const bucket = groups.get(item.type) || [];\n    bucket.push(item);\n    groups.set(item.type, bucket);\n  }\n  return groups;\n}'),
   exercise('c-1a', 'c', 1, 'Maximum', ['keyword', 'operator', 'bracket'], 'int max(int a, int b) {\n    return a > b ? a : b;\n}'),
-  exercise('c-1b', 'c', 1, 'String length', ['string', 'punctuation', 'indentation'], 'int length(const char *s) {\n    int n = 0;\n    while (s[n] != 0) n++;\n    return n;\n}'),
+  exercise('c-1b', 'c', 1, 'String length', ['identifier', 'punctuation', 'indentation'], 'int length(const char *s) {\n    int n = 0;\n    while (s[n] != 0) n++;\n    return n;\n}'),
   exercise('c-2', 'c', 2, 'Sum array', ['indentation', 'operator', 'bracket'], 'int sum(const int *a, int n) {\n    int total = 0;\n    for (int i = 0; i < n; i++) {\n        total += a[i];\n    }\n    return total;\n}'),
   exercise('c-3', 'c', 3, 'Reverse in place', ['operator', 'punctuation', 'indentation'], 'void reverse(int *a, int n) {\n    for (int i = 0; i < n / 2; i++) {\n        int j = n - i - 1;\n        int tmp = a[i];\n        a[i] = a[j];\n        a[j] = tmp;\n    }\n}'),
   exercise('cpp-1a', 'cpp', 1, 'Square template', ['keyword', 'operator', 'bracket'], 'template <typename T>\nT square(T value) {\n    return value * value;\n}'),

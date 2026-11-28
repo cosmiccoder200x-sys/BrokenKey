@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { LANGUAGES, KINDS, tokenize, createAttemptTracker, getInsertion, emptyCounts, weakestConstructs, selectExercise } from './code-arena-core.js';
+import { LANGUAGES, KINDS, tokenize, createAttemptTracker, getInsertion, emptyCounts, weakestConstructs, selectExercise, formatIndentation } from './code-arena-core.js';
 import { EXERCISES } from './code-arena-content.js';
 import { STORAGE_KEY, MAX_SESSIONS, appendSession, loadHistory, saveHistory } from './code-arena-storage.js';
 
@@ -104,4 +104,9 @@ test('storage corruption, invalid records and quota errors are safe', () => {
   assert.deepEqual(loadHistory(storage).map(s => s.id), ['good']);
   assert.equal(saveHistory(storage, [session('a')]), false);
   assert.deepEqual(loadHistory(null), []);
+});
+
+test('indent conversion preserves nested structure and non-leading spaces', () => {
+  assert.equal(formatIndentation('if x:\n    if y:\n        print("a b")', 'python', '\t'), 'if x:\n\tif y:\n\t\tprint("a b")');
+  assert.equal(formatIndentation('if (x) {\n  return x;\n}', 'javascript', '    '), 'if (x) {\n    return x;\n}');
 });
