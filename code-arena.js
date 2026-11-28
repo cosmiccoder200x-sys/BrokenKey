@@ -40,7 +40,7 @@ function renderHistory() {
     title.textContent = name; number.textContent = value; card.append(title, number); $('arena-history').append(card);
   }
   const weak = weakestConstructs(history, lang);
-  $('arena-weakness').textContent = weak.length ? 'Focus on the constructs below. Rates include corrected attempts.' : 'No recurring construct weakness yet (at least five attempts per construct are needed).';
+  $('arena-weakness').textContent = weak.length ? 'Focus on the constructs below. Rates include corrected attempts.' : 'No measured construct weakness yet (at least five attempts per construct are needed).';
   $('arena-weak-list').replaceChildren();
   for (const item of weak) {
     const li = document.createElement('li');

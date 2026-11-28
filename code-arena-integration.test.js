@@ -125,3 +125,31 @@ test('code cancellation resets hooks and leaves Learn Mode behavior intact', () 
   assert.equal(learn.length, 1);
   assert.equal(app.elements.get('status-label').textContent, 'LEARNING PASSAGE COMPLETE');
 });
+
+test('completion during indentation can safely cancel the shared session', () => {
+  const app = loadTypingEngine(), done = [], api = app.window.BrokenKeyTyping;
+  const source = 'x\n    ';
+  api.startCodeSession(source, {
+    ...options(source, done),
+    onComplete(metrics) { done.push(metrics); api.cancelCodeSession(); }
+  });
+  type(app, 'x');
+  type(app, 'x\n');
+  assert.equal(api.insertCodeIndent(), true);
+  assert.equal(done.length, 1);
+  assert.equal(api.cancelCodeSession(), false);
+});
+test('drop and paste events are prevented only in code practice', () => {
+  const app = loadTypingEngine(), api = app.window.BrokenKeyTyping;
+  api.startCodeSession('abc', options('abc', []));
+  const input = app.elements.get('typing-input');
+  for (const kind of ['drop', 'paste']) {
+    const event = new Event(kind, {cancelable: true});
+    input.dispatchEvent(event);
+    assert.equal(event.defaultPrevented, true);
+  }
+  api.cancelCodeSession();
+  const drop = new Event('drop', {cancelable: true});
+  input.dispatchEvent(drop);
+  assert.equal(drop.defaultPrevented, false);
+});

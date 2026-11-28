@@ -110,3 +110,16 @@ test('indent conversion preserves nested structure and non-leading spaces', () =
   assert.equal(formatIndentation('if x:\n    if y:\n        print("a b")', 'python', '\t'), 'if x:\n\tif y:\n\t\tprint("a b")');
   assert.equal(formatIndentation('if (x) {\n  return x;\n}', 'javascript', '    '), 'if (x) {\n    return x;\n}');
 });
+
+test('weakness prioritizes matching construct drills within the selected tier', () => {
+  const counts = emptyCounts();
+  counts.string = { attempts: 20, errors: 5 };
+  const previous = { id: 'weak', language: 'python', exerciseId: 'py-1a', completedAt: 1, wpm: 20, accuracy: 75, counts };
+  assert.equal(selectExercise(EXERCISES, [previous], 'python').id, 'py-1b');
+});
+test('curated snippets classify structural constructs and highlight literal markup safely', () => {
+  const tokens = tokenize('if (x <= 2) {\n  return "<tag>";\n}', 'javascript');
+  for (const [kind, value] of [['keyword','if'],['operator','<='],['bracket','{'],['punctuation',';'],['string','"<tag>"'],['indentation','  ']]) {
+    assert.ok(tokens.some(t => t.kind === kind && t.value === value), kind);
+  }
+});

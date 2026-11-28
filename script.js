@@ -750,17 +750,18 @@ function insertCodeIndent() {
   const { value } = inputEl;
   const start = inputEl.selectionStart, end = inputEl.selectionEnd;
   if (!Number.isInteger(start) || !Number.isInteger(end) || start !== end) return false;
-  const lineStart = value.lastIndexOf('\n', start - 1) + 1;
+  const lineStart = start === 0 ? 0 : value.lastIndexOf('\n', start - 1) + 1;
   if (!/^[ \t]*$/.test(value.slice(lineStart, start)) ||
       value.length + codeSession.indent.length > currentPassage.length) return false;
   const indent = codeSession.indent;
-  codeSession.selection = { start, end };
-  codeSession.insertingIndent = true;
+  const session = codeSession;
+  session.selection = { start, end };
+  session.insertingIndent = true;
   try {
     inputEl.value = value.slice(0, start) + indent + value.slice(end);
     inputEl.setSelectionRange?.(start + indent.length, start + indent.length);
     handleInput({ inputType: 'insertText', data: indent });
-  } finally { codeSession.insertingIndent = false; }
+  } finally { session.insertingIndent = false; }
   return true;
 }
 
